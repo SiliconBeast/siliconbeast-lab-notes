@@ -23,3 +23,8 @@ which is everything hand-drawn or animated, plus the project write-ups.
 - **icons.ts**: tech logo paths from [Simple Icons](https://simpleicons.org) (CC0).
 
 These files are made for Framer: they import from `"framer"` and use Framer's colour tokens, so they don't run as a standalone app.
+
+## Copyright
+
+© 2026 Suvir Duggal. All rights reserved. This code and content are shared to view only,
+not to reuse. See [LICENSE](LICENSE) for details and the one exception (the Simple Icons path data).
