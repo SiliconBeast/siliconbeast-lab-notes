@@ -24,7 +24,6 @@ function pen(hex: string, dark: boolean) {
 
 export const PENCIL_CSS = `
 .pi-d { display: none; }
-${DARK.media}.pi-d { display: inline; } body:not([data-sb-theme="light"]) .pi-l { display: none; } }
 ${DARK.attr}.pi-d { display: inline; } ${DARK.attr}.pi-l { display: none; }
 .pi-wrap:hover .pi-svg { transform: rotate(-6deg) scale(1.08); }
 .pi-svg { transition: transform .25s cubic-bezier(.3,.7,.3,1.4); }

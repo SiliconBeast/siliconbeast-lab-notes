@@ -18,7 +18,7 @@ which is everything hand-drawn or animated, plus the project write-ups.
 - **ink.tsx / pencil.tsx**: the shared palette, fonts and a seeded "rough pen" that draws wobbly SVG lines, so every figure looks hand-drawn. Figures draw themselves on as they scroll into view.
 - **Sketch.tsx**: the hand-drawn charts and system diagrams on each project page, plus the experience timeline (four lanes: work, leadership, EcoCar, next co-op).
 - **ExperienceList.tsx**: the experience section as a grouped, scannable list, with highlighter marks that sweep across the key numbers as it scrolls into view.
-- **NotebookOpening.tsx / covers.tsx**: the closed notebook the site opens on. It swings open on its spine in 3D and zooms into page one. There are five covers (kraft, leather-bound, composition, lab notebook, blueprint), all drawn with CSS and SVG noise, so no images load.
+- **NotebookOpening.tsx**: the closed notebook the site opens on. It swings open on its spine in 3D and zooms into page one. There are five covers (kraft, leather-bound, composition, lab notebook, blueprint), all drawn with CSS and SVG noise, so no images load. (covers.tsx is the earlier standalone copy of the cover designs; the component now carries them itself.)
 - **ThemeToggle.tsx**: switches between light paper and the dark blueprint theme. An ink circle spreads out from the button, then a scan line or a lamp flicker plays.
 - **Signature.tsx**: draws a signature stroke by stroke, timed to how it was actually written.
 - **Interests.tsx, NowList.tsx, SkillsIndex.tsx, Calc.tsx, Mark.tsx**: the hobbies board, the "doing right now" list, the skills index, the worked-calculation margin notes and small hand-drawn logos.
