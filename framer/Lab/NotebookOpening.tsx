@@ -13,11 +13,11 @@ import { coverFront, coverInside, COVER_OPTIONS, COVER_TITLES, CoverStyle } from
 // Framer can render one copy per breakpoint and remount them while the page hydrates, so the
 // sequence lives on window: every copy follows the same clock, and a remount picks up where the
 // opening is instead of skipping it.
-type Seq = { start: number; done: boolean; live: number; goneSent: boolean; overflow: string | null }
+type Seq = { start: number; openAt: number | null; done: boolean; live: number; goneSent: boolean; overflow: string | null }
 
 function seq(): Seq {
     const w = window as any
-    if (!w.__sbCoverSeq) w.__sbCoverSeq = { start: performance.now(), done: false, live: 0, goneSent: false, overflow: null }
+    if (!w.__sbCoverSeq) w.__sbCoverSeq = { start: performance.now(), openAt: null, done: false, live: 0, goneSent: false, overflow: null }
     return w.__sbCoverSeq
 }
 
@@ -29,18 +29,20 @@ function sendGone(s: Seq) {
 }
 
 function forced() {
-    return typeof location !== "undefined" && /(^|[?&#])cover/.test(location.search + location.hash)
+    return typeof location !== "undefined" && /(^|[?&#])cover(\b|$)/.test(location.search + location.hash)
 }
 
 const CSS = `
-.sbc { position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; perspective: 1800px; cursor: pointer; transition: opacity .55s ease 1.05s; }
-.sbc[data-phase="open"] { opacity: 0; pointer-events: none; }
-.sbc-stage { position: relative; width: min(74vw, 340px); aspect-ratio: 3 / 4; transform-style: preserve-3d; transition: transform .9s cubic-bezier(.6, 0, .4, 1) .55s; }
-.sbc[data-phase="open"] .sbc-stage { transform: scale(2.6) translateY(4%); }
+.sbc { position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; perspective: 1800px; cursor: pointer; --skip: 0s; }
+.sbc[data-phase="open"] { pointer-events: none; animation: sbc-fade .55s ease calc(1.05s - var(--skip)) forwards; }
+@keyframes sbc-fade { to { opacity: 0; } }
+.sbc-stage { position: relative; width: min(74vw, 340px); aspect-ratio: 3 / 4; transform-style: preserve-3d; }
+.sbc[data-phase="open"] .sbc-stage { animation: sbc-zoom .9s cubic-bezier(.6, 0, .4, 1) calc(.55s - var(--skip)) forwards; }
+@keyframes sbc-zoom { to { transform: scale(2.6) translateY(4%); } }
 .sbc-cover { position: absolute; inset: 0; transform-origin: 0 50%; transform-style: preserve-3d; }
 .sbc-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 3px 9px 9px 3px; }
 .sbc-back { transform: rotateY(180deg); }
-.sbc[data-phase="open"] .sbc-cover { animation: sbc-swing 1.1s cubic-bezier(.55, .05, .3, 1) forwards; }
+.sbc[data-phase="open"] .sbc-cover { animation: sbc-swing 1.1s cubic-bezier(.55, .05, .3, 1) calc(0s - var(--skip)) forwards; }
 @keyframes sbc-swing { from { transform: rotateY(0deg); } to { transform: rotateY(-168deg); } }
 .sbc-hint { transition: opacity .3s; }
 .sbc[data-phase="open"] .sbc-hint { opacity: 0; }
@@ -49,10 +51,9 @@ const CSS = `
 /* reduced motion: still a short swing on the spine, but no breathing and no zoom into the page */
 @media (prefers-reduced-motion: reduce) {
   .sbc-closed .sbc-cover { animation: none; }
-  .sbc-stage { transition: none !important; }
-  .sbc[data-phase="open"] .sbc-stage { transform: none; }
+  .sbc[data-phase="open"] .sbc-stage { animation: none; }
   .sbc[data-phase="open"] .sbc-cover { animation-duration: .9s; }
-  .sbc { transition: opacity .45s ease .85s; }
+  .sbc[data-phase="open"] { animation-duration: .45s; animation-delay: calc(.85s - var(--skip)); }
 }
 `
 
@@ -87,8 +88,14 @@ interface Props {
  */
 export default function NotebookOpening({ coverStyle, title, subtitle, owner, hold, style }: Props) {
     const isCanvas = RenderTarget.current() === RenderTarget.canvas
-    const finished = typeof window !== "undefined" && (window as any).__sbCoverSeq?.done && !forced()
-    const [phase, setPhase] = React.useState<"closed" | "open" | "gone">(isCanvas || finished ? "gone" : "closed")
+    // a copy mounted after the opening began (a Framer remount) joins it where it is
+    const known: Seq | undefined = typeof window !== "undefined" ? (window as any).__sbCoverSeq : undefined
+    const replay = forced()
+    const [phase, setPhase] = React.useState<"closed" | "open" | "gone">(
+        isCanvas || (known?.done && !replay) ? "gone" : known?.openAt != null && !known.done ? "open" : "closed"
+    )
+    const skip = React.useRef<number | null>(null)
+    if (phase === "open" && skip.current === null) skip.current = known?.openAt != null ? Math.max(0, (performance.now() - known.openAt) / 1000) : 0
     const [mounted, setMounted] = React.useState(false)
     const open = React.useCallback(() => setPhase((p) => (p === "closed" ? "open" : p)), [])
 
@@ -98,7 +105,7 @@ export default function NotebookOpening({ coverStyle, title, subtitle, owner, ho
         const s = seq()
         if (s.done) {
             if (!forced()) return setPhase("gone")
-            Object.assign(s, { start: performance.now(), done: false, goneSent: false })
+            Object.assign(s, { start: performance.now(), openAt: null, done: false, goneSent: false })
         }
         const root = document.documentElement
         if (s.live++ === 0) {
@@ -107,7 +114,7 @@ export default function NotebookOpening({ coverStyle, title, subtitle, owner, ho
             root.style.overflow = "hidden"
         }
         ;(window as any).__sbCover = !s.goneSent
-        const t = window.setTimeout(open, Math.max(0, hold * 1000 - (performance.now() - s.start)))
+        const t = window.setTimeout(open, Math.max(0, (hold ?? 0) * 1000 - (performance.now() - s.start)))
         // Scrolling or a key opens it early, but not in the first moments (stray momentum scrolls).
         const opts = { passive: true } as AddEventListenerOptions
         const arm = window.setTimeout(() => {
@@ -134,13 +141,15 @@ export default function NotebookOpening({ coverStyle, title, subtitle, owner, ho
     React.useEffect(() => {
         if (phase !== "open") return
         const s = seq()
+        if (s.openAt === null) s.openAt = performance.now()
+        const past = (skip.current ?? 0) * 1000
         document.documentElement.style.overflow = s.overflow ?? ""
         // Let figures start drawing while the page zooms in.
-        const t1 = window.setTimeout(() => sendGone(s), 900)
+        const t1 = window.setTimeout(() => sendGone(s), Math.max(0, 900 - past))
         const t2 = window.setTimeout(() => {
             s.done = true
             setPhase("gone")
-        }, 1700)
+        }, Math.max(0, 1700 - past))
         return () => {
             window.clearTimeout(t1)
             window.clearTimeout(t2)
@@ -156,7 +165,7 @@ export default function NotebookOpening({ coverStyle, title, subtitle, owner, ho
     const label = (coverStyle || "leather") === "leather" || coverStyle === "kraft"
 
     const cover = (
-        <div className={`sbc${phase === "closed" ? " sbc-closed" : ""}`} data-phase={phase} onClick={open} aria-hidden="true" style={{ background: C.mat }}>
+        <div className={`sbc${phase === "closed" ? " sbc-closed" : ""}`} data-phase={phase} onClick={open} aria-hidden="true" style={{ background: C.mat, ["--skip" as any]: `${skip.current ?? 0}s` }}>
             <style>{CSS}</style>
             <div className="sbc-stage">
                 <div
@@ -225,5 +234,5 @@ addPropertyControls(NotebookOpening, {
     title: { type: ControlType.String, title: "Title", defaultValue: "SiliconBeast|Lab Notes", description: "Use | for a line break" },
     subtitle: { type: ControlType.String, title: "Subtitle", defaultValue: "Vol. 1 · Computer Engineering" },
     owner: { type: ControlType.String, title: "Owner", defaultValue: "Suvir Duggal" },
-    hold: { type: ControlType.Number, title: "Hold (s)", defaultValue: 1.4, min: 0, max: 3, step: 0.1 },
+    hold: { type: ControlType.Number, title: "Hold (s)", defaultValue: 0, min: 0, max: 3, step: 0.1, description: "How long the closed cover waits before opening" },
 })

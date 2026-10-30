@@ -107,6 +107,20 @@ function apply(theme: "light" | "dark", remember = true) {
     window.dispatchEvent(new CustomEvent("sb-theme", { detail: theme }))
 }
 
+// Light paper is the default; blueprint only if the visitor picked it before. Always pin a theme
+// so the palette never depends on how Framer emits its dark rules.
+function applyStart() {
+    let saved: string | null = null
+    try {
+        saved = localStorage.getItem(KEY)
+    } catch {}
+    apply(saved === "dark" ? "dark" : "light", false)
+}
+
+// Run as soon as this module loads, before React hydrates, so a dark-mode system doesn't flash
+// the blueprint palette first.
+if (typeof document !== "undefined" && document.body && RenderTarget.current() !== RenderTarget.canvas) applyStart()
+
 interface Props {
     lightLabel: string
     darkLabel: string
@@ -122,28 +136,11 @@ export default function ThemeToggle({ lightLabel, darkLabel, style }: Props) {
     const [swing, setSwing] = React.useState(0)
     React.useEffect(() => {
         if (RenderTarget.current() === RenderTarget.canvas) return
-        let saved: string | null = null
-        try {
-            saved = localStorage.getItem(KEY)
-        } catch {}
-        // Always pin a theme so the palette never depends on how Framer emits its dark rules.
-        apply(saved === "light" || saved === "dark" ? saved : systemDark() ? "dark" : "light", false)
+        applyStart()
         setDark(currentDark())
-        const mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null
-        const onSys = () => {
-            let pinned: string | null = null
-            try {
-                pinned = localStorage.getItem(KEY)
-            } catch {}
-            if (!pinned) apply(systemDark() ? "dark" : "light", false)
-        }
         const onTheme = () => setDark(currentDark())
-        mq?.addEventListener?.("change", onSys)
         window.addEventListener("sb-theme", onTheme)
-        return () => {
-            mq?.removeEventListener?.("change", onSys)
-            window.removeEventListener("sb-theme", onTheme)
-        }
+        return () => window.removeEventListener("sb-theme", onTheme)
     }, [])
 
     const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
