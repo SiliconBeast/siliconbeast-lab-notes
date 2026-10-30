@@ -19,11 +19,11 @@ which is everything hand-drawn or animated, plus the project write-ups.
 - **Sketch.tsx**: the hand-drawn charts and system diagrams on each project page, plus the experience timeline (four lanes: work, leadership, EcoCar, next co-op).
 - **ExperienceList.tsx**: the experience section as a grouped, scannable list, with highlighter marks that sweep across the key numbers as it scrolls into view.
 - **NotebookOpening.tsx**: the closed notebook the site opens on. It swings open on its spine in 3D and zooms into page one. There are five covers (kraft, leather-bound, composition, lab notebook, blueprint), all drawn with CSS and SVG noise, so no images load. (covers.tsx is the earlier standalone copy of the cover designs; the component now carries them itself.)
-- **ThemeToggle.tsx**: switches between light paper and the dark blueprint theme. An ink circle spreads out from the button, then a scan line or a lamp flicker plays.
+- **ThemeToggle.tsx**: switches between light paper and the dark blueprint theme. It also sets the chip favicon and runs the seasonal Halloween decorations (Oct 20 to Nov 1). An ink circle spreads out from the button, then a scan line or a lamp flicker plays.
 - **Signature.tsx**: draws a signature stroke by stroke, timed to how it was actually written.
 - **Interests.tsx, NowList.tsx, SkillsIndex.tsx, Calc.tsx, Mark.tsx**: the hobbies board, the "doing right now" list, the skills index, the worked-calculation margin notes and small hand-drawn logos.
 - **AwardsShelf.tsx**: awards as hand-drawn objects on a shelf (trophies, a medal, a certificate, a scroll, a parcel, a rosette) that draw themselves in.
-- **Halloween.tsx**: pencil-drawn seasonal decorations (cobweb, spider, pumpkin, bats, ghost, candy-corn pin) that switch themselves on from Oct 20 to Nov 1.
+- **Halloween.tsx**: the standalone version of the seasonal decorations. The live site runs the same code from ThemeToggle.tsx, because Framer's build left this component out.
 - **BackToTop.tsx**: a small paper "↑ top" tab that slides in once you scroll down.
 - **icons.ts**: tech logo paths from [Simple Icons](https://simpleicons.org) (CC0).
 
