@@ -108,7 +108,7 @@
     "Logos": "javascript,github,claude",
     "Other tools": "Framer · React · TypeScript · SVG · View Transitions API",
     "Keywords": "front-end, React, TypeScript, accessibility, design",
-    "Skills used": "TypeScript (React) · SVG graphics · Accessibility (reduced motion) · AI-assisted development (Claude Code)",
+    "Skills used": "TypeScript (React) · SVG graphics · Accessibility (reduced motion) · Agentic development (Claude Code)",
     "Links note": "Code: github.com/SiliconBeast/siliconbeast-lab-notes"
   },
   {
@@ -136,7 +136,7 @@
     "Logos": "c,stmicroelectronics,arduino,kicad,claude",
     "Other tools": "LoRa · GNSS · NFC · Arduino UNO Q",
     "Keywords": "RF, low-power design, embedded C, hardware prototyping",
-    "Skills used": "C · STM32 microcontrollers · Low-power design (power gating) · PCB design in KiCad · RF: LoRa, GNSS, NFC · AI-assisted development (Claude Code)",
+    "Skills used": "C · STM32 microcontrollers · Low-power design (power gating) · PCB design in KiCad · RF: LoRa, GNSS, NFC · Agentic development (Claude Code)",
     "Links note": "Repo, photos and demo video: coming soon."
   },
   {

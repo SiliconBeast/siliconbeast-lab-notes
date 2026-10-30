@@ -27,7 +27,7 @@ interface Props {
  * @framerSupportedLayoutWidth auto
  * @framerSupportedLayoutHeight auto
  */
-export default function BackToTop({ label, threshold, style }: Props) {
+export default function BackToTop({ label = "top", threshold = 700, style }: Props) {
     const isCanvas = RenderTarget.current() === RenderTarget.canvas
     const [on, setOn] = React.useState(false)
     const [mounted, setMounted] = React.useState(false)

@@ -10,7 +10,23 @@ import { coverFront, coverInside, COVER_OPTIONS, COVER_TITLES, CoverStyle } from
 // a key to open it early. Plays once per page load, not on in-site navigation; add ?cover to
 // the URL to replay it.
 
-let played = false
+// Framer can render one copy per breakpoint and remount them while the page hydrates, so the
+// sequence lives on window: every copy follows the same clock, and a remount picks up where the
+// opening is instead of skipping it.
+type Seq = { start: number; done: boolean; live: number; goneSent: boolean; overflow: string | null }
+
+function seq(): Seq {
+    const w = window as any
+    if (!w.__sbCoverSeq) w.__sbCoverSeq = { start: performance.now(), done: false, live: 0, goneSent: false, overflow: null }
+    return w.__sbCoverSeq
+}
+
+function sendGone(s: Seq) {
+    if (s.goneSent) return
+    s.goneSent = true
+    ;(window as any).__sbCover = false
+    window.dispatchEvent(new Event("sb-cover-gone"))
+}
 
 function forced() {
     return typeof location !== "undefined" && /(^|[?&#])cover/.test(location.search + location.hash)
@@ -71,20 +87,27 @@ interface Props {
  */
 export default function NotebookOpening({ coverStyle, title, subtitle, owner, hold, style }: Props) {
     const isCanvas = RenderTarget.current() === RenderTarget.canvas
-    const [phase, setPhase] = React.useState<"closed" | "open" | "gone">(isCanvas || (played && !forced()) ? "gone" : "closed")
+    const finished = typeof window !== "undefined" && (window as any).__sbCoverSeq?.done && !forced()
+    const [phase, setPhase] = React.useState<"closed" | "open" | "gone">(isCanvas || finished ? "gone" : "closed")
     const [mounted, setMounted] = React.useState(false)
     const open = React.useCallback(() => setPhase((p) => (p === "closed" ? "open" : p)), [])
 
     React.useEffect(() => {
         setMounted(true)
         if (isCanvas || phase === "gone") return
-        played = true
-        const w = window as any
-        w.__sbCover = true
+        const s = seq()
+        if (s.done) {
+            if (!forced()) return setPhase("gone")
+            Object.assign(s, { start: performance.now(), done: false, goneSent: false })
+        }
         const root = document.documentElement
-        const prevOverflow = root.style.overflow
-        root.style.overflow = "hidden"
-        const t = window.setTimeout(open, hold * 1000)
+        if (s.live++ === 0) {
+            // remember the page's own setting once, not the lock a previous copy left behind
+            if (s.overflow === null) s.overflow = root.style.overflow
+            root.style.overflow = "hidden"
+        }
+        ;(window as any).__sbCover = !s.goneSent
+        const t = window.setTimeout(open, Math.max(0, hold * 1000 - (performance.now() - s.start)))
         // Scrolling or a key opens it early, but not in the first moments (stray momentum scrolls).
         const opts = { passive: true } as AddEventListenerOptions
         const arm = window.setTimeout(() => {
@@ -98,24 +121,26 @@ export default function NotebookOpening({ coverStyle, title, subtitle, owner, ho
             window.removeEventListener("wheel", open)
             window.removeEventListener("touchmove", open)
             window.removeEventListener("keydown", open)
-            root.style.overflow = prevOverflow
-            if (w.__sbCover) {
-                w.__sbCover = false
-                window.dispatchEvent(new Event("sb-cover-gone"))
-            }
+            // the last copy to leave mid-sequence hands the page back, unless a remount takes over
+            if (--s.live === 0 && !s.done)
+                window.setTimeout(() => {
+                    if (s.live > 0 || s.done) return
+                    root.style.overflow = s.overflow ?? ""
+                    sendGone(s)
+                }, 120)
         }
     }, [])
 
     React.useEffect(() => {
         if (phase !== "open") return
-        const w = window as any
-        document.documentElement.style.overflow = ""
+        const s = seq()
+        document.documentElement.style.overflow = s.overflow ?? ""
         // Let figures start drawing while the page zooms in.
-        const t1 = window.setTimeout(() => {
-            w.__sbCover = false
-            window.dispatchEvent(new Event("sb-cover-gone"))
-        }, 900)
-        const t2 = window.setTimeout(() => setPhase("gone"), 1700)
+        const t1 = window.setTimeout(() => sendGone(s), 900)
+        const t2 = window.setTimeout(() => {
+            s.done = true
+            setPhase("gone")
+        }, 1700)
         return () => {
             window.clearTimeout(t1)
             window.clearTimeout(t2)
