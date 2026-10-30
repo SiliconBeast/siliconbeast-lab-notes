@@ -1,0 +1,37 @@
+## Work experience
+Sep 2026 – now | University of Alberta | Teaching Assistant
+- TA-ing this term while finishing my own Computer Engineering degree.
+
+Jan – Aug 2026 | TELUS Communications | Software Engineer Intern | telus
+- Cut home-network telemetry from every 30+ min to every 5 s ([[360× faster]]) with a Go streaming pipeline on gRPC/gNMI.
+- Built a Docker ML anomaly pipeline projected to cut support tickets by 47% and save [[$250K/yr]] in truck rolls.
+- Caught schema regressions before staging with [[6,500+ property-based API tests]].
+
+May – Aug 2025 | Faculty of Engineering, University of Alberta | Program Instructor & TA
+- Co-managed 8 projects across 3 products, [[beating targets by 25%]].
+- Built a GCP-hosted Discord verification bot in Python that cut onboarding for 450+ members from [[4 hours a week to 30 seconds]].
+
+Oct 2024 – Jan 2025 | University of Alberta | Undergraduate Research Assistant
+- Designed a fuzzy neural network in Python, TensorFlow and scikit-learn, [[improving accuracy by 20%]], and presented it as a research poster.
+
+Jun – Aug 2024 | Mentorness Technologies (remote) | Data Analyst
+- Built Power BI dashboards and pulled business insights from raw data with SQL and Excel.
+
+## Clubs & leadership
+Mar 2026 – now | UAlberta EcoCar Club, University of Alberta | Electrical & software team member
+- RF: redesigned and hand-soldered the car's [[RF telemetry PCB]] in KiCad, validated while driving.
+- Software: STM32 firmware in C that streams speed, battery voltage and GPS to the pit live, plus [[bug fixes to the team's LoRa (RFM95) radio driver]].
+
+Apr 2026 – now | Faculty of Engineering, University of Alberta | Engineering Leader
+- A student leader for the Faculty of Engineering, alongside classes and TA work.
+
+May 2025 – now | UAlberta Computer Engineering Club | VP External
+- Built industry and university partnerships for events reaching [[2,300+ students]], and ran workshops.
+
+Jul 2024 – Apr 2025 | Engineering Students' Society, University of Alberta | Entrepreneurship & Innovation Coordinator
+- Launched the university's [[first startup-focused contest]], with workshops run alongside the ICE incubator.
+
+## Next
+From May 2027 | Software, embedded, hardware or systems | Your team, hopefully | plan
+- A 4- or 8-month co-op. This step is still in pencil.
+-> #contact | happy to make it ink

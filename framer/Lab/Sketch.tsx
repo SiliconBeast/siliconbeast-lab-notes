@@ -145,7 +145,7 @@ const DIAGRAMS: Record<string, (c: Ctx) => void> = {
     },
 }
 
-const CHARTS: Record<string, { h: number; draw: (c: Ctx) => void }> = {
+const CHARTS: Record<string, { h: number | ((W: number) => number); draw: (c: Ctx) => void }> = {
     latency: {
         h: 200,
         draw: ({ p, W, H }) => {
@@ -197,52 +197,99 @@ const CHARTS: Record<string, { h: number; draw: (c: Ctx) => void }> = {
         },
     },
     timeline: {
-        h: 304,
+        // four lanes instead of one row per role, so the chart stays readable when roles overlap
+        h: (W) => (W < 560 ? 376 : 312),
         draw: ({ p, W, H, now }) => {
-            const m0 = 8
-            const m1 = 45
-            const x0 = 10
+            const narrow = W < 560
+            const m0 = 5
+            const m1 = 49
+            const x0 = narrow ? 8 : 104
             const x1 = W - 10
             const base = H - 30
             const mx = (m: number) => x0 + ((x1 - x0) * (m - m0)) / (m1 - m0)
             const today = now ?? 34.9
-            // [label, start month, end month (null = ongoing), fill, style]; months count from Jan 2024
-            const rows: [string, number, number | null, string | null, "bar" | "squiggle" | "plan"][] = [
-                ["Research assistant · UAlberta", 9, 13, C.hlB, "bar"],
-                ["Instructor & TA · UAlberta", 16, 20, C.hlG, "bar"],
-                ["SWE intern · TELUS", 24, 32, C.hl, "bar"],
-                ["EcoCar club · RF telemetry", 26, null, null, "squiggle"],
-                ["Engineering Leader · UAlberta", 27, null, C.hlO, "bar"],
-                ["TA · UAlberta", 32, null, C.hlP, "bar"],
-                ["your team? · Summer 2027", 40, 44, null, "plan"],
+            // months count from Jan 2024; end null = still going; "long|short" labels, short used on phones
+            type Bar = { label: string; a0: number; b0: number | null; fill?: string; kind?: "squiggle" | "plan"; sub?: number }
+            const lanes: { name: string; bars: Bar[] }[] = [
+                {
+                    name: "Work",
+                    bars: [
+                        { label: "Data analyst|Analyst", a0: 5, b0: 8, fill: C.hlP },
+                        { label: "Research assistant|Research", a0: 9, b0: 13, fill: C.hlB },
+                        { label: "Instructor & TA|Instructor", a0: 16, b0: 20, fill: C.hlG },
+                        { label: "TELUS SWE intern|TELUS", a0: 24, b0: 32, fill: C.hl },
+                        { label: "TA", a0: 32, b0: null, fill: C.hlP },
+                    ],
+                },
+                {
+                    name: "Leadership",
+                    bars: [
+                        { label: "ESS coordinator|ESS", a0: 6, b0: 16, fill: C.hlO },
+                        { label: "VP External · CompE Club|VP External", a0: 16, b0: null, fill: C.hlB },
+                        { label: "Engineering Leader|Eng. Leader", a0: 27, b0: null, fill: C.hlO, sub: 1 },
+                    ],
+                },
+                { name: "EcoCar", bars: [{ label: "PCB, RF + firmware|RF + firmware", a0: 26, b0: null, kind: "squiggle" }] },
+                { name: "Next co-op", bars: [{ label: "your team? · 4 or 8 months|your team? · 4–8 mo", a0: 40, b0: 48, kind: "plan" }] },
             ]
-            rows.forEach(([label, a0, b0, fill, kind], i) => {
-                const y = 12 + i * 36
-                const a = mx(a0)
-                const b = mx(b0 ?? today)
-                const tooWide = a + label.length * 7.4 > W - 6
-                const plan = kind === "plan"
-                p.text(tooWide ? Math.max(b, a + 40) : a, y + 11, label, {
-                    anchor: tooWide ? "end" : "start",
-                    size: plan ? 17 : 13.5,
-                    fill: plan ? C.pencil : C.inkk,
-                    font: plan ? FONT.scrawl : FONT.hand,
-                })
-                if (kind === "squiggle") {
-                    const pts: number[][] = []
-                    for (let x = a; x <= b; x += 4) pts.push([x, y + 25 + Math.sin((x - a) / 4.2) * 5])
-                    p.curve(pts, { stroke: C.green, sw: 2, seed: 80 })
-                } else if (plan) {
-                    p.rect(a, y + 16, b - a, 16, { stroke: C.pencil, sw: 1.2, rough: 1, seed: 50 + i, dash: "4 4" })
-                } else {
-                    p.rect(a, y + 16, b - a, 16, { stroke: C.ink, sw: 1.2, rough: 1.1, fill: fill ?? undefined, fillStyle: "solid", seed: 50 + i })
+            const ROW = 46
+            let y = 6
+            lanes.forEach((lane, li) => {
+                if (narrow) {
+                    p.text(x0, y + 10, lane.name.toUpperCase(), { anchor: "start", size: 9.5, fill: C.print, font: FONT.mono })
+                    y += 16
                 }
-                if (b0 === null) {
-                    // still going: a dashed arrow past today
-                    const yy = y + 24
-                    p.line(b + 2, yy, b + 22, yy, { stroke: C.pencil, sw: 1.1, rough: 0.4, seed: 90 + i, dash: "3 3" })
-                    p.lines([[b + 17, yy - 4], [b + 23, yy], [b + 17, yy + 4]], { stroke: C.pencil, sw: 1.1, rough: 0.3, seed: 95 + i })
+                const subs = Math.max(...lane.bars.map((b) => b.sub ?? 0)) + 1
+                if (!narrow) p.text(x0 - 14, y + 30, lane.name.toUpperCase(), { anchor: "end", size: 10, fill: C.print, font: FONT.mono })
+                for (let s = 0; s < subs; s++) {
+                    const top = y + s * ROW
+                    // label slots above and below the bars of this sub-row; a label takes the first free one
+                    const used: [number, number][][] = [[], []]
+                    lane.bars
+                        .filter((b) => (b.sub ?? 0) === s)
+                        .forEach((bar, bi) => {
+                            const [long, short] = bar.label.split("|")
+                            const label = narrow && short ? short : long
+                            const a = mx(bar.a0)
+                            const b = mx(bar.b0 ?? today)
+                            const plan = bar.kind === "plan"
+                            const size = plan ? 16 : 13
+                            const tw = label.length * (plan ? 6.4 : 6.6)
+                            const lx = Math.max(x0, Math.min(a, x1 - tw))
+                            const slot = used.findIndex((u) => u.every(([u0, u1]) => lx > u1 + 8 || lx + tw < u0 - 8))
+                            if (slot >= 0) {
+                                used[slot].push([lx, lx + tw])
+                                p.text(lx, slot === 0 ? top + 12 : top + 44, label, {
+                                    anchor: "start",
+                                    size,
+                                    fill: plan ? C.pencil : C.inkk,
+                                    font: plan ? FONT.scrawl : FONT.hand,
+                                })
+                            }
+                            const seed = 50 + li * 10 + s * 5 + bi
+                            if (bar.kind === "squiggle") {
+                                const pts: number[][] = []
+                                for (let x = a; x <= b; x += 4) pts.push([x, top + 24 + Math.sin((x - a) / 4.2) * 5])
+                                p.curve(pts, { stroke: C.green, sw: 2, seed })
+                            } else if (plan) {
+                                p.rect(a, top + 17, b - a, 14, { stroke: C.pencil, sw: 1.2, rough: 1, seed, dash: "4 4" })
+                                // the 8-month option gets a tick where the 4-month one would end
+                                if (bar.b0 !== null && bar.b0 - bar.a0 > 4) {
+                                    const t = mx(bar.a0 + 4)
+                                    p.line(t, top + 19, t, top + 29, { stroke: C.pencil, sw: 1, rough: 0.3, seed: seed + 1, dash: "2 3" })
+                                }
+                            } else {
+                                p.rect(a, top + 17, Math.max(3, b - a), 14, { stroke: C.ink, sw: 1.2, rough: 1.1, fill: bar.fill, fillStyle: "solid", seed })
+                            }
+                            if (bar.b0 === null) {
+                                // still going: a dashed arrow past today
+                                const yy = top + 24
+                                p.line(b + 2, yy, b + 18, yy, { stroke: C.pencil, sw: 1.1, rough: 0.4, seed: seed + 2, dash: "3 3" })
+                                p.lines([[b + 13, yy - 4], [b + 19, yy], [b + 13, yy + 4]], { stroke: C.pencil, sw: 1.1, rough: 0.3, seed: seed + 3 })
+                            }
+                        })
                 }
+                y += subs * ROW + 8
             })
             p.line(x0, base, x1, base, { stroke: C.ink, sw: 1.2, rough: 0.8, seed: 60 })
             ;(
@@ -250,6 +297,7 @@ const CHARTS: Record<string, { h: number; draw: (c: Ctx) => void }> = {
                     [12, "2025"],
                     [24, "2026"],
                     [36, "2027"],
+                    [48, "2028"],
                 ] as [number, string][]
             ).forEach(([m, label], i) => {
                 const x = mx(m)
@@ -258,7 +306,7 @@ const CHARTS: Record<string, { h: number; draw: (c: Ctx) => void }> = {
             })
             if (now !== null && now > m0 && now < m1) {
                 const nx = mx(now)
-                p.line(nx, 6, nx, base, { stroke: C.red, sw: 1.1, rough: 0.5, seed: 70, dash: "3 4" })
+                p.line(nx, 4, nx, base, { stroke: C.red, sw: 1.1, rough: 0.5, seed: 70, dash: "3 4" })
                 note(p, nx + 4, base - 6, "today", C.red, { anchor: "start", size: 16 })
             }
         },
@@ -398,7 +446,7 @@ const LABELS: Record<string, string> = {
     bio: "Block diagram: temperature and humidity feed an MCU and ML model that estimates methane without a gas sensor",
     latency: "Bar chart: telemetry latency was 1800 seconds before and 5 seconds after",
     speedups: "Log-scale chart: telemetry 360 times faster, onboarding 480 times faster",
-    timeline: "Timeline: research assistant Oct 2024 to Jan 2025, instructor and TA May to Aug 2025, TELUS intern Jan to Aug 2026, open for a co-op May to Aug 2027",
+    timeline: "Timeline in four lanes. Work: data analyst Jun to Aug 2024, research assistant Oct 2024 to Jan 2025, instructor and TA May to Aug 2025, TELUS software engineer intern Jan to Aug 2026, teaching assistant since Sep 2026. Leadership: ESS coordinator Jul 2024 to Apr 2025, VP External of the Computer Engineering Club since May 2025, Engineering Leader since Apr 2026. EcoCar club since Mar 2026. Next: a 4 or 8 month co-op from May 2027",
     timing: "Timing diagram: when the GPU stops sending heartbeats, the failsafe takes over within 100 milliseconds",
     packet: "Each radio update carries speed, battery voltage and GPS position",
     tools: "Four separate field tools replaced by one pocket device",
@@ -435,7 +483,7 @@ export default function Sketch(props: Props) {
     let vh = 250
     if (chart) {
         vw = Math.max(280, w)
-        vh = chart.h
+        vh = typeof chart.h === "function" ? chart.h(vw) : chart.h
         chart.draw({ p, W: vw, H: vh, now })
     } else if (DIAGRAMS[key]) {
         DIAGRAMS[key]({ p, W: vw, H: vh })

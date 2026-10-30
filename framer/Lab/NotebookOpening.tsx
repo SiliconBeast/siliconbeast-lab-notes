@@ -30,10 +30,13 @@ const CSS = `
 .sbc[data-phase="open"] .sbc-hint { opacity: 0; }
 .sbc-closed .sbc-cover { animation: sbc-breathe 2.4s ease-in-out infinite; }
 @keyframes sbc-breathe { 50% { transform: rotateY(-7deg); } }
+/* reduced motion: still a short swing on the spine, but no breathing and no zoom into the page */
 @media (prefers-reduced-motion: reduce) {
-  .sbc-stage, .sbc-cover { transition: none !important; animation: none !important; }
-  .sbc[data-phase="open"] .sbc-stage, .sbc[data-phase="open"] .sbc-cover { transform: none; }
-  .sbc { transition: opacity .4s ease; }
+  .sbc-closed .sbc-cover { animation: none; }
+  .sbc-stage { transition: none !important; }
+  .sbc[data-phase="open"] .sbc-stage { transform: none; }
+  .sbc[data-phase="open"] .sbc-cover { animation-duration: .9s; }
+  .sbc { transition: opacity .45s ease .85s; }
 }
 `
 
@@ -81,8 +84,7 @@ export default function NotebookOpening({ coverStyle, title, subtitle, owner, ho
         const root = document.documentElement
         const prevOverflow = root.style.overflow
         root.style.overflow = "hidden"
-        const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        const t = window.setTimeout(open, (reduce ? 0.8 : hold) * 1000)
+        const t = window.setTimeout(open, hold * 1000)
         // Scrolling or a key opens it early, but not in the first moments (stray momentum scrolls).
         const opts = { passive: true } as AddEventListenerOptions
         const arm = window.setTimeout(() => {

@@ -10,12 +10,14 @@ which is everything hand-drawn or animated, plus the project write-ups.
 | --- | --- |
 | `framer/Lab/` | The Framer code components, written in React and TypeScript |
 | `content/projects.json` | The project write-ups from the site's CMS |
+| `content/experience.txt` | The experience list, in the format `ExperienceList.tsx` reads |
 | `preview/notebook-opening.html` | A standalone page that plays the notebook-cover opening, with a picker for all five cover styles |
 
 ### Components
 
 - **ink.tsx / pencil.tsx**: the shared palette, fonts and a seeded "rough pen" that draws wobbly SVG lines, so every figure looks hand-drawn. Figures draw themselves on as they scroll into view.
-- **Sketch.tsx**: the hand-drawn charts and system diagrams on each project page, plus the experience timeline.
+- **Sketch.tsx**: the hand-drawn charts and system diagrams on each project page, plus the experience timeline (four lanes: work, leadership, EcoCar, next co-op).
+- **ExperienceList.tsx**: the experience section as a grouped, scannable list, with highlighter marks that sweep across the key numbers as it scrolls into view.
 - **NotebookOpening.tsx / covers.tsx**: the closed notebook the site opens on. It swings open on its spine in 3D and zooms into page one. There are five covers (kraft, leather-bound, composition, lab notebook, blueprint), all drawn with CSS and SVG noise, so no images load.
 - **ThemeToggle.tsx**: switches between light paper and the dark blueprint theme. An ink circle spreads out from the button, then a scan line or a lamp flicker plays.
 - **Signature.tsx**: draws a signature stroke by stroke, timed to how it was actually written.
