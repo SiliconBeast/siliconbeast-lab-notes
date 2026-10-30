@@ -11,16 +11,16 @@ import { C, FONT, Pen, DRAW_CSS, useDrawOn } from "./ink.tsx"
 const CSS = `
 .aw-wrap { container-type: inline-size; }
 .aw-head { margin: 0 0 6px; font: 500 11px/1.2 ${FONT.mono}; letter-spacing: .14em; text-transform: uppercase; color: ${C.print}; }
-.aw { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); row-gap: 18px; }
-.aw li { display: grid; justify-items: center; align-content: start; text-align: center; }
+.aw { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; row-gap: 18px; }
+.aw li { flex: 1 1 0; min-width: 96px; max-width: 150px; display: grid; justify-items: center; align-content: start; text-align: center; }
 .aw-obj { width: 66px; height: 66px; transition: transform .35s cubic-bezier(.3,.7,.3,1.4); transform-origin: 50% 100%; }
 .aw li:hover .aw-obj { transform: translateY(-5px) rotate(-4deg); }
 .aw-plank { display: block; width: 100%; height: 12px; margin-top: -2px; }
 .aw-title { padding: 0 6px; margin-top: 8px; font-family: ${FONT.hand}; font-size: 15px; line-height: 1.2; color: ${C.inkk}; }
 .aw-org { padding: 0 6px; margin-top: 3px; font: 500 9.5px/1.3 ${FONT.mono}; letter-spacing: .08em; text-transform: uppercase; color: ${C.print}; }
 @container (max-width: 560px) {
-  .aw { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 112px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 6px; }
-  .aw li { scroll-snap-align: start; }
+  .aw { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 6px; }
+  .aw li { flex: 0 0 116px; max-width: none; scroll-snap-align: start; }
 }
 @media (prefers-reduced-motion: reduce) { .aw-obj { transition: none; } }
 `
