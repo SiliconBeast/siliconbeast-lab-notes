@@ -23,6 +23,7 @@ which is everything hand-drawn or animated, plus the project write-ups.
 - **Signature.tsx**: draws a signature stroke by stroke, timed to how it was actually written.
 - **Interests.tsx, NowList.tsx, SkillsIndex.tsx, Calc.tsx, Mark.tsx**: the hobbies board, the "doing right now" list, the skills index, the worked-calculation margin notes and small hand-drawn logos.
 - **AwardsShelf.tsx**: awards as hand-drawn objects on a shelf (trophies, a medal, a certificate, a scroll, a parcel, a rosette) that draw themselves in.
+- **Halloween.tsx**: pencil-drawn seasonal decorations (cobweb, spider, pumpkin, bats, ghost, candy-corn pin) that switch themselves on from Oct 20 to Nov 1.
 - **BackToTop.tsx**: a small paper "↑ top" tab that slides in once you scroll down.
 - **icons.ts**: tech logo paths from [Simple Icons](https://simpleicons.org) (CC0).
 
