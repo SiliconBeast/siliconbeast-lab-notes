@@ -7,8 +7,8 @@ import { FONT, hash, rnd } from "./ink.tsx"
 
 const CSS = `
 .stk { list-style: none; margin: 0; padding: 4px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
-.stk li { transition: transform .3s cubic-bezier(.3,.7,.3,1.4), filter .3s; filter: drop-shadow(0 1.5px 1px rgba(0,0,0,.3)) drop-shadow(0 6px 8px rgba(0,0,0,.14)); }
-.stk li:hover { transform: rotate(0deg) scale(1.07) translateY(-2px) !important; filter: drop-shadow(0 3px 2px rgba(0,0,0,.3)) drop-shadow(0 12px 14px rgba(0,0,0,.18)); }
+.stk li { transition: transform .3s cubic-bezier(.3,.7,.3,1.4), filter .3s; filter: drop-shadow(0 1px .5px rgba(0,0,0,.22)) drop-shadow(0 3px 4px rgba(0,0,0,.08)); }
+.stk li:hover { transform: rotate(0deg) scale(1.05) translateY(-1px) !important; filter: drop-shadow(0 2px 1px rgba(0,0,0,.22)) drop-shadow(0 6px 8px rgba(0,0,0,.1)); }
 @media (prefers-reduced-motion: reduce) { .stk li { transition: none; } }
 `
 
@@ -67,7 +67,7 @@ function Sticker({ item, size, seed }: { item: Item; size: number; seed: number 
                     <g fill="none" stroke={INK} strokeOpacity={0.35} strokeWidth={1} strokeDasharray="3 3">
                         {ring}
                     </g>
-                    <ellipse cx={w * 0.32} cy={h * 0.24} rx={w * 0.2} ry={h * 0.08} fill="#fff" opacity={0.35} transform={`rotate(-25 ${w * 0.32} ${h * 0.24})`} />
+                    <ellipse cx={w * 0.32} cy={h * 0.24} rx={w * 0.2} ry={h * 0.08} fill="#fff" opacity={0.1} transform={`rotate(-25 ${w * 0.32} ${h * 0.24})`} />
                 </svg>
                 <div
                     style={{

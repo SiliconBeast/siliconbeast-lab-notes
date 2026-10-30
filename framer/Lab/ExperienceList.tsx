@@ -25,7 +25,7 @@ const CSS = `
 .xl-body li::before { content: ""; position: absolute; left: 2px; top: .72em; width: 8px; height: 1.5px; border-radius: 2px; background: ${C.ink}; transform: rotate(-8deg); }
 .xl-body.one li { padding-left: 0; }
 .xl-body.one li::before { display: none; }
-.xl-hl { color: inherit; padding: 0 .2em; margin: 0 -.05em; border-radius: .3em .15em .35em .2em; background-image: linear-gradient(100deg, transparent .1em, ${C.hl} .25em, ${C.hl} calc(100% - .25em), transparent calc(100% - .08em)); background-repeat: no-repeat; background-size: 0% 100%; -webkit-box-decoration-break: clone; box-decoration-break: clone; transition: background-size .7s cubic-bezier(.3,.7,.3,1); }
+.xl-hl { color: inherit; background-color: transparent; padding: 0 .2em; margin: 0 -.05em; border-radius: .3em .15em .35em .2em; background-image: linear-gradient(100deg, transparent .1em, ${C.hl} .25em, ${C.hl} calc(100% - .25em), transparent calc(100% - .08em)); background-repeat: no-repeat; background-size: 0% 100%; -webkit-box-decoration-break: clone; box-decoration-break: clone; transition: background-size .7s cubic-bezier(.3,.7,.3,1); }
 .xl[data-in="true"] .xl-hl { background-size: 100% 100%; }
 .xl-plan .xl-title { color: ${C.pencil}; }
 .xl-plan .xl-body { font-family: ${FONT.scrawl}; font-size: 19px; color: ${C.pencil}; }

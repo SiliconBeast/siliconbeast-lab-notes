@@ -48,7 +48,8 @@ Code and design reviews: 1
 Docs and incident runbooks: 1
 AI-assisted development (Claude Code): 4`
 
-type Row = { name: string; refs: number[] } | { also: string }
+// refs are project-sheet numbers, or "work" for something used on the job (links to the experience section)
+type Row = { name: string; refs: (number | "work")[] } | { also: string }
 type Cat = { title: string; rows: Row[] }
 
 function parse(src: string): Cat[] {
@@ -66,14 +67,15 @@ function parse(src: string): Cat[] {
             cat.rows.push({ also: line.replace(/^also:\s*/i, "") })
             continue
         }
-        const m = /^(.*):\s*([\d,\s]+)$/.exec(line)
+        const m = /^(.*):\s*((?:\d+|work)(?:\s*,\s*(?:\d+|work))*)$/i.exec(line)
         if (m)
             cat.rows.push({
                 name: m[1].trim(),
                 refs: m[2]
                     .split(",")
-                    .map((n) => parseInt(n, 10))
-                    .filter((n) => !isNaN(n)),
+                    .map((n) => n.trim().toLowerCase())
+                    .map((n) => (n === "work" ? "work" : parseInt(n, 10)))
+                    .filter((n) => n === "work" || !isNaN(n)) as (number | "work")[],
             })
         else cat.rows.push({ name: line, refs: [] })
     }
@@ -87,6 +89,7 @@ const CSS = `
 .sbx summary:hover h3 { text-decoration: underline wavy ${C.hl}; text-decoration-thickness: 3px; text-underline-offset: 6px; }
 .sbx .pm::before { content: "+"; } .sbx details[open] .pm::before { content: "–"; }
 .sbx a.ref { display: inline-grid; place-items: center; width: 31px; height: 29px; font-family: ${FONT.scrawl}; font-size: 17px; font-weight: 600; text-decoration: none; color: ${C.ink}; border: 1.6px solid ${C.ink}; border-radius: 52% 46% 55% 44% / 48% 56% 44% 52%; transform: rotate(-4deg); transition: background .2s, transform .2s; }
+.sbx a.ref.work { width: auto; padding: 0 9px; font-size: 15px; }
 .sbx a.ref:nth-child(2n) { transform: rotate(5deg); border-radius: 46% 54% 44% 56% / 55% 45% 53% 47%; }
 .sbx a.ref:hover, .sbx a.ref:focus-visible { background: ${C.hl}; transform: rotate(0) scale(1.08); }
 .sbx a.ref:focus-visible, .sbx summary:focus-visible { outline: 2px dashed ${C.ink}; outline-offset: 3px; }
@@ -145,6 +148,12 @@ export default function SkillsIndex({ data, slugs, titles, openCount, basePath, 
                                         <span>{r.name}</span>
                                         <span style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end", flex: "none" }}>
                                             {r.refs.map((n) => {
+                                                if (n === "work")
+                                                    return (
+                                                        <a key="work" className="ref work" href="/#experience" title="Used at work: see the experience section" aria-label="Used at work: see the experience section">
+                                                            work
+                                                        </a>
+                                                    )
                                                 const slug = slugList[n - 1]
                                                 const t = titleList[n - 1] || `project ${n}`
                                                 return slug ? (

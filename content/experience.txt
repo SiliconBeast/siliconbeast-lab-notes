@@ -22,10 +22,10 @@ Mar 2026 – now | UAlberta EcoCar Club, University of Alberta | Electrical & so
 - RF: redesigned and hand-soldered the car's [[RF telemetry PCB]] in KiCad, validated while driving.
 - Software: STM32 firmware in C that streams speed, battery voltage and GPS to the pit live, plus [[bug fixes to the team's LoRa (RFM95) radio driver]].
 
-Apr 2026 – now | Faculty of Engineering, University of Alberta | Engineering Leader
-- A student leader for the Faculty of Engineering, alongside classes and TA work.
+Apr 2026 – now | Student Engagement and Leadership Program, Faculty of Engineering, University of Alberta | Engineering Leader
+- A student leader in the Faculty of Engineering’s Student Engagement and Leadership Program, alongside classes and TA work.
 
-May 2025 – now | UAlberta Computer Engineering Club | VP External
+May 2025 – May 2026 | UAlberta Computer Engineering Club | VP External
 - Built industry and university partnerships for events reaching [[2,300+ students]], and ran workshops.
 
 Jul 2024 – Apr 2025 | Engineering Students' Society, University of Alberta | Entrepreneurship & Innovation Coordinator

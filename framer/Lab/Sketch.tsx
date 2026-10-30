@@ -131,18 +131,24 @@ const DIAGRAMS: Record<string, (c: Ctx) => void> = {
         note(p, 220, 238, "all on a Tang Nano 9K FPGA", C.pencil, { size: 17 })
     },
     bio: ({ p }) => {
-        node(p, 8, 24, 104, 46, "temperature", { size: 14 })
-        node(p, 8, 92, 104, 46, "humidity", { size: 14 })
-        node(p, 8, 166, 104, 46, "gas sensor", { size: 14, dash: "5 5", stroke: C.red, text: C.red })
-        p.line(14, 170, 106, 208, { stroke: C.red, sw: 2, rough: 1, seed: 3 })
-        p.line(106, 170, 14, 208, { stroke: C.red, sw: 2, rough: 1, seed: 4 })
-        note(p, 122, 196, "not needed", C.red, { anchor: "start" })
-        node(p, 168, 56, 120, 70, "MCU +\nML model", { fill: C.hl })
-        node(p, 322, 56, 110, 70, "methane\nestimate")
-        arrow(p, 112, 47, 166, 80)
-        arrow(p, 112, 115, 166, 100)
-        arrow(p, 288, 91, 320, 91)
+        node(p, 8, 30, 104, 46, "temperature", { size: 14 })
+        node(p, 8, 96, 104, 46, "humidity", { size: 14 })
+        note(p, 60, 166, "one AM2320 sensor", C.pencil, { size: 16 })
+        node(p, 146, 52, 112, 70, "STM32\nfirmware", { fill: C.hl })
+        arrow(p, 112, 53, 144, 76)
+        arrow(p, 112, 119, 144, 98)
+        arrow(p, 258, 87, 296, 87, { label: "Bridge", lc: C.pencil })
+        node(p, 298, 14, 136, 56, "GRU forecaster\nanomaly check")
+        node(p, 298, 104, 136, 56, "biogas process\nmodel")
+        node(p, 298, 186, 136, 44, "LEDs + dashboard", { size: 14 })
+        arrow(p, 366, 72, 366, 102)
+        arrow(p, 366, 162, 366, 184)
+        node(p, 146, 186, 112, 44, "gas sensor", { size: 14, dash: "5 5", stroke: C.red, text: C.red })
+        p.line(150, 190, 254, 226, { stroke: C.red, sw: 2, rough: 1, seed: 3 })
+        p.line(254, 190, 150, 226, { stroke: C.red, sw: 2, rough: 1, seed: 4 })
+        note(p, 202, 246, "not needed", C.red)
     },
+
 }
 
 const CHARTS: Record<string, { h: number | ((W: number) => number); draw: (c: Ctx) => void }> = {
@@ -225,7 +231,7 @@ const CHARTS: Record<string, { h: number | ((W: number) => number); draw: (c: Ct
                     name: "Leadership",
                     bars: [
                         { label: "ESS coordinator|ESS", a0: 6, b0: 16, fill: C.hlO },
-                        { label: "VP External · CompE Club|VP External", a0: 16, b0: null, fill: C.hlB },
+                        { label: "VP External · CompE Club|VP External", a0: 16, b0: 29, fill: C.hlB },
                         { label: "Engineering Leader|Eng. Leader", a0: 27, b0: null, fill: C.hlO, sub: 1 },
                     ],
                 },
@@ -443,10 +449,10 @@ const LABELS: Record<string, string> = {
     rf: "Block diagram: speed, battery voltage and GPS go into STM32 firmware, out through an RF PCB over radio to a pit laptop",
     scout: "Block diagram: LoRa, GNSS, NFC and an RF detector feed STM32WL firmware with power gating",
     riscv: "Block diagram: RV32I core and a Mandelbrot GPU share a memory-mapped bus with firmware, HDMI video and PWM audio on a Tang Nano 9K FPGA",
-    bio: "Block diagram: temperature and humidity feed an MCU and ML model that estimates methane without a gas sensor",
+    bio: "Block diagram: an AM2320 temperature and humidity sensor feeds STM32 firmware, which passes readings over Bridge to a GRU anomaly forecaster and a biogas process model on the Linux side; results show on LEDs and a dashboard. No gas sensor is needed",
     latency: "Bar chart: telemetry latency was 1800 seconds before and 5 seconds after",
     speedups: "Log-scale chart: telemetry 360 times faster, onboarding 480 times faster",
-    timeline: "Timeline in four lanes. Work: data analyst Jun to Aug 2024, research assistant Oct 2024 to Jan 2025, instructor and TA May to Aug 2025, TELUS software engineer intern Jan to Aug 2026, teaching assistant since Sep 2026. Leadership: ESS coordinator Jul 2024 to Apr 2025, VP External of the Computer Engineering Club since May 2025, Engineering Leader since Apr 2026. EcoCar club since Mar 2026. Next: a 4 or 8 month co-op from May 2027",
+    timeline: "Timeline in four lanes. Work: data analyst Jun to Aug 2024, research assistant Oct 2024 to Jan 2025, instructor and TA May to Aug 2025, TELUS software engineer intern Jan to Aug 2026, teaching assistant since Sep 2026. Leadership: ESS coordinator Jul 2024 to Apr 2025, VP External of the Computer Engineering Club May 2025 to May 2026, Engineering Leader since Apr 2026. EcoCar club since Mar 2026. Next: a 4 or 8 month co-op from May 2027",
     timing: "Timing diagram: when the GPU stops sending heartbeats, the failsafe takes over within 100 milliseconds",
     packet: "Each radio update carries speed, battery voltage and GPS position",
     tools: "Four separate field tools replaced by one pocket device",

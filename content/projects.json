@@ -1,38 +1,8 @@
 [
   {
-    "Title": "TELUS streaming telemetry",
-    "Slug": "telus-streaming-telemetry",
-    "No": 1,
-    "Status": "Shipped",
-    "Where": "TELUS Communications",
-    "When": "Jan – Aug 2026",
-    "Role": "Software Engineer Intern",
-    "One line": "Network health data in 5 seconds instead of 30+ minutes.",
-    "Result": "360× faster",
-    "Tech line": "Go · gRPC · gNMI · Docker",
-    "Objective": "TELUS home network devices reported their health every 30+ minutes, so problems showed up long after customers felt them. The goal: near real-time telemetry, rolled out to every device.",
-    "What I did": [
-      "Built a Go streaming pipeline on gRPC/gNMI that cut telemetry latency from 30+ min to 5 s across 35+ metrics.",
-      "Cross-compiled a Go gNMI agent and deployed it to every OpenWrt arm64 device with a parallel SSH rollout and procd.",
-      "Built a Docker ML anomaly pipeline, projected to mean 47% fewer support tickets and $250K/yr in avoided truck rolls.",
-      "Caught schema regressions before staging with 6,500+ property-based tests on 51 API operations (Schemathesis).",
-      "Stress-tested micro-DPU fiber extender provisioning under peak traffic with load-generation scripts.",
-      "Wrote the architecture docs, incident runbook and readiness gaps so operations could take it over."
-    ],
-    "Calculations": "? speed-up\n30+ min ≥ 1800 s → 5 s\n1800 / 5 = [[360×]] ✓\n\n? test coverage\n6 500 ÷ 51 ops\n≈ [[127 tests / op]] ✓",
-    "Diagram": "telus",
-    "Chart": "latency",
-    "Chart caption": "Telemetry latency before and after, same scale",
-    "Logos": "go,docker,grafana,linux,openwrt,git",
-    "Other tools": "gRPC · gNMI · procd · Schemathesis · Jira",
-    "Keywords": "streaming telemetry, distributed systems, test automation, anomaly detection, Agile team",
-    "Skills used": "Go · Docker · gRPC / gNMI streaming · Grafana dashboards · Linux (OpenWrt, arm64) · Property-based API testing · Load and stress testing · Distributed systems · ML anomaly detection · Agile and Jira · Code and design reviews · Docs and incident runbooks",
-    "Links note": "Repo, photos and demo video: coming soon."
-  },
-  {
     "Title": "Wingman",
     "Slug": "wingman",
-    "No": 2,
+    "No": 1,
     "Status": "Shipped",
     "Where": "Personal project",
     "When": "",
@@ -60,7 +30,7 @@
   {
     "Title": "RF telemetry board",
     "Slug": "rf-telemetry-board",
-    "No": 3,
+    "No": 2,
     "Status": "Shipped",
     "Where": "UAlberta EcoCar Club",
     "When": "Mar 2026 – now",
@@ -83,6 +53,34 @@
     "Keywords": "PCB design, embedded C, RF, vehicle telemetry",
     "Skills used": "C · STM32 microcontrollers · CAN bus · PCB design in KiCad · Soldering and board bring-up · RF: LoRa, GNSS, NFC",
     "Links note": "Repo, photos and demo video: coming soon."
+  },
+  {
+    "Title": "BioTherma-AI",
+    "Slug": "biotherma-ai",
+    "No": 3,
+    "Status": "Shipped",
+    "Where": "Personal project",
+    "When": "Sep 2026",
+    "Role": "Embedded + ML",
+    "One line": "An edge-AI monitor that spots a bio-digester going wrong from temperature and humidity alone.",
+    "Result": "anomaly detection, no gas sensor",
+    "Tech line": "C++ · Python · Arduino UNO Q · GRU",
+    "Objective": "Small anaerobic bio-digesters fail quietly: a heater fault, a leaky lid or a stalled culture. BioTherma-AI watches the reactor with one cheap temperature and humidity sensor and flags when it stops behaving normally, then models the biogas yield from the feed log.",
+    "What I did": [
+      "STM32 firmware (Arduino on Zephyr) reads an AM2320 sensor in the reactor headspace and passes readings to the UNO Q’s Linux side over Bridge.",
+      "A GRU forecaster learns the chamber’s normal temperature and humidity, and flags a sustained forecast error as an anomaly.",
+      "A process model estimates biogas output, harvest timing and carbon-to-nitrogen balance from the feed log and measured temperature, using first-order hydrolysis kinetics.",
+      "Status shows on the board’s RGB LEDs and a local web dashboard; the electronics sit in a 3D-printed enclosure."
+    ],
+    "Calculations": "? anomaly check\nr_{t} = x_{t} − x̂_{t}   (forecast residual)\nsustained |r_{t}| ⇒ [[reactor not behaving normally]]\n\n? bill of materials\nArduino UNO Q + AM2320\n= [[3 wires]] ✓\n~ there is no gas sensor: biogas yield is modelled, not measured",
+    "Diagram": "bio",
+    "Chart": "",
+    "Chart caption": "",
+    "Logos": "cplusplus,python,arduino",
+    "Other tools": "Arduino UNO Q · AM2320 · Zephyr · GRU · SQLite · 3D-printed enclosure",
+    "Keywords": "edge AI, anomaly detection, embedded firmware, process modelling",
+    "Skills used": "C++ · Python · ML anomaly detection · Edge ML (GRU forecaster on Arduino UNO Q)",
+    "Links note": "Code: github.com/SiliconBeast/biotherma-ai"
   },
   {
     "Title": "SignalScout",
@@ -137,32 +135,6 @@
     "Other tools": "Yosys · Gowin FPGA · HDMI · PWM audio",
     "Keywords": "computer architecture, RTL design, FPGA, bare-metal firmware",
     "Skills used": "C · VHDL · Bare-metal C drivers (memory-mapped I/O) · FPGA (Gowin, Xilinx) · RTL design · Fixed-point pipelines",
-    "Links note": "Repo, photos and demo video: coming soon."
-  },
-  {
-    "Title": "BioTherma-AI",
-    "Slug": "biotherma-ai",
-    "No": 6,
-    "Status": "In progress",
-    "Where": "Personal project",
-    "When": "In progress",
-    "Role": "Embedded + ML",
-    "One line": "Estimates a bio-digester’s methane output without a gas sensor.",
-    "Result": "infers from temperature + humidity",
-    "Tech line": "Embedded · ML",
-    "Objective": "Estimate a bio-digester’s methane output from temperature and humidity readings, with no gas sensor on board.",
-    "What I did": [
-      "Reads temperature and humidity from the digester.",
-      "A machine-learning model estimates methane from those readings."
-    ],
-    "Calculations": "? status\nin progress\n~ full write-up coming soon",
-    "Diagram": "bio",
-    "Chart": "",
-    "Chart caption": "",
-    "Logos": "",
-    "Other tools": "Embedded · machine learning · sensors",
-    "Keywords": "sensor ML, embedded",
-    "Skills used": "ML anomaly detection",
     "Links note": "Repo, photos and demo video: coming soon."
   }
 ]
