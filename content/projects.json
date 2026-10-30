@@ -83,9 +83,38 @@
     "Links note": "Code: github.com/SiliconBeast/biotherma-ai"
   },
   {
+    "Title": "SiliconBeast Lab Notes",
+    "Slug": "siliconbeast-lab-notes",
+    "No": 4,
+    "Status": "Shipped",
+    "Where": "Personal project",
+    "When": "Oct 2026",
+    "Role": "Design + front-end",
+    "One line": "This portfolio: a lab notebook you can scroll, built in Framer with hand-drawn React components.",
+    "Result": "every figure drawn in code",
+    "Tech line": "React · TypeScript · Framer · SVG",
+    "Objective": "A portfolio that reads like my lab notebook: every project gets a sheet with the problem, a diagram, the steps and the numbers. It also had to work for a recruiter skimming on a phone, in light or dark mode.",
+    "What I did": [
+      "Built 20 React and TypeScript code components for Framer, including a seeded “rough pen” that draws every diagram and chart as wobbly SVG, so figures look hand-drawn and draw themselves on as you scroll.",
+      "A 3D notebook cover that swings open on load, with five cover styles made from CSS and SVG noise rather than image files.",
+      "A light paper / dark blueprint theme switch with an ink-spread view transition, and reduced-motion fallbacks throughout.",
+      "A signature that replays stroke by stroke, traced from a video of me signing so the timing is real.",
+      "Projects and roles in the CMS, with search-engine metadata and layouts for desktop, tablet and phone."
+    ],
+    "Calculations": "? image files in the figures\ndiagrams and charts = SVG paths drawn in code\n= [[0]] ✓\n\n? code components\n[[20]] React + TypeScript components\n~ source on GitHub",
+    "Diagram": "site",
+    "Chart": "",
+    "Chart caption": "",
+    "Logos": "javascript,github,claude",
+    "Other tools": "Framer · React · TypeScript · SVG · View Transitions API",
+    "Keywords": "front-end, React, TypeScript, accessibility, design",
+    "Skills used": "TypeScript (React) · SVG graphics · Accessibility (reduced motion) · AI-assisted development (Claude Code)",
+    "Links note": "Code: github.com/SiliconBeast/siliconbeast-lab-notes"
+  },
+  {
     "Title": "SignalScout",
     "Slug": "signalscout",
-    "No": 4,
+    "No": 5,
     "Status": "In progress",
     "Where": "Personal project",
     "When": "In progress",
@@ -113,7 +142,7 @@
   {
     "Title": "RISC-V SoC + GPU",
     "Slug": "risc-v-soc-gpu",
-    "No": 5,
+    "No": 6,
     "Status": "In progress",
     "Where": "Personal project",
     "When": "In progress",

@@ -22,6 +22,7 @@ which is everything hand-drawn or animated, plus the project write-ups.
 - **ThemeToggle.tsx**: switches between light paper and the dark blueprint theme. An ink circle spreads out from the button, then a scan line or a lamp flicker plays.
 - **Signature.tsx**: draws a signature stroke by stroke, timed to how it was actually written.
 - **Interests.tsx, NowList.tsx, Stickers.tsx, SkillsIndex.tsx, Calc.tsx, Mark.tsx**: the hobbies board, the "doing right now" list, award stickers, the skills index, the worked-calculation margin notes and small hand-drawn logos.
+- **BackToTop.tsx**: a small paper "↑ top" tab that slides in once you scroll down.
 - **icons.ts**: tech logo paths from [Simple Icons](https://simpleicons.org) (CC0).
 
 These files are made for Framer: they import from `"framer"` and use Framer's colour tokens, so they don't run as a standalone app.

@@ -148,6 +148,20 @@ const DIAGRAMS: Record<string, (c: Ctx) => void> = {
         p.line(254, 190, 150, 226, { stroke: C.red, sw: 2, rough: 1, seed: 4 })
         note(p, 202, 246, "not needed", C.red)
     },
+    site: ({ p }) => {
+        node(p, 8, 24, 124, 56, "CMS content\n(projects, roles)")
+        node(p, 8, 150, 124, 56, "Framer layouts\n3 screen sizes")
+        node(p, 166, 82, 128, 72, "React + TS\ncode components", { fill: C.hl })
+        arrow(p, 132, 52, 164, 100)
+        arrow(p, 132, 178, 164, 136)
+        node(p, 330, 20, 104, 52, "rough-pen\nSVG figures")
+        node(p, 330, 96, 104, 52, "3D cover +\ntheme switch")
+        node(p, 330, 172, 104, 52, "signature\nreplay")
+        arrow(p, 294, 100, 328, 50)
+        arrow(p, 294, 118, 328, 122)
+        arrow(p, 294, 136, 328, 196)
+        note(p, 220, 246, "no image files in any figure", C.green, { size: 16 })
+    },
 
 }
 
@@ -450,6 +464,7 @@ const LABELS: Record<string, string> = {
     scout: "Block diagram: LoRa, GNSS, NFC and an RF detector feed STM32WL firmware with power gating",
     riscv: "Block diagram: RV32I core and a Mandelbrot GPU share a memory-mapped bus with firmware, HDMI video and PWM audio on a Tang Nano 9K FPGA",
     bio: "Block diagram: an AM2320 temperature and humidity sensor feeds STM32 firmware, which passes readings over Bridge to a GRU anomaly forecaster and a biogas process model on the Linux side; results show on LEDs and a dashboard. No gas sensor is needed",
+    site: "Block diagram: CMS content and Framer layouts for three screen sizes feed React and TypeScript code components, which draw the SVG figures, the 3D cover and theme switch, and the signature replay",
     latency: "Bar chart: telemetry latency was 1800 seconds before and 5 seconds after",
     speedups: "Log-scale chart: telemetry 360 times faster, onboarding 480 times faster",
     timeline: "Timeline in four lanes. Work: data analyst Jun to Aug 2024, research assistant Oct 2024 to Jan 2025, instructor and TA May to Aug 2025, TELUS software engineer intern Jan to Aug 2026, teaching assistant since Sep 2026. Leadership: ESS coordinator Jul 2024 to Apr 2025, VP External of the Computer Engineering Club May 2025 to May 2026, Engineering Leader since Apr 2026. EcoCar club since Mar 2026. Next: a 4 or 8 month co-op from May 2027",
@@ -517,7 +532,7 @@ addPropertyControls(Sketch, {
         type: ControlType.String,
         title: "Figure",
         defaultValue: "telus",
-        description: "telus, wingman, rf, scout, riscv, bio, latency, speedups, timeline, timing, packet, tools, mults",
+        description: "telus, wingman, rf, scout, riscv, bio, site, latency, speedups, timeline, timing, packet, tools, mults",
     },
     animate: { type: ControlType.Boolean, title: "Draw on", defaultValue: true },
 })

@@ -6,7 +6,7 @@ import { FONT, hash, rnd } from "./ink.tsx"
 //   Kicker | Title | Footer | shape (burst, circle or tag) | colour
 
 const CSS = `
-.stk { list-style: none; margin: 0; padding: 4px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.stk { list-style: none; margin: 0; padding: 4px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; justify-content: center; }
 .stk li { transition: transform .3s cubic-bezier(.3,.7,.3,1.4), filter .3s; filter: drop-shadow(0 1px .5px rgba(0,0,0,.22)) drop-shadow(0 3px 4px rgba(0,0,0,.08)); }
 .stk li:hover { transform: rotate(0deg) scale(1.05) translateY(-1px) !important; filter: drop-shadow(0 2px 1px rgba(0,0,0,.22)) drop-shadow(0 6px 8px rgba(0,0,0,.1)); }
 @media (prefers-reduced-motion: reduce) { .stk li { transition: none; } }
