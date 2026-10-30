@@ -117,9 +117,28 @@ function applyStart() {
     apply(saved === "dark" ? "dark" : "light", false)
 }
 
+// The S-trace chip favicon. Set from code so it replaces Framer's default icon on every page
+// without depending on Site Settings.
+const FAVICON =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><g stroke="#1C4F8A" stroke-width="2.6" stroke-linecap="round"><path d="M11 2v4M16 2v4M21 2v4M11 26v4M16 26v4M21 26v4M2 11h4M2 16h4M2 21h4M26 11h4M26 16h4M26 21h4"/></g><rect x="6" y="6" width="20" height="20" rx="3.5" fill="#1C4F8A"/><path d="M20.5 11h-8v5h7v5h-8" fill="none" stroke="#EAF2FC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20.5" cy="11" r="1.9" fill="#FCE77A"/><circle cx="11.5" cy="21" r="1.9" fill="#FCE77A"/></svg>'
+
+function setFavicon() {
+    if (document.getElementById("sb-favicon")) return
+    document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]').forEach((l) => l.remove())
+    const link = document.createElement("link")
+    link.id = "sb-favicon"
+    link.rel = "icon"
+    link.type = "image/svg+xml"
+    link.href = "data:image/svg+xml," + encodeURIComponent(FAVICON)
+    document.head.appendChild(link)
+}
+
 // Run as soon as this module loads, before React hydrates, so a dark-mode system doesn't flash
 // the blueprint palette first.
-if (typeof document !== "undefined" && document.body && RenderTarget.current() !== RenderTarget.canvas) applyStart()
+if (typeof document !== "undefined" && document.body && RenderTarget.current() !== RenderTarget.canvas) {
+    applyStart()
+    setFavicon()
+}
 
 interface Props {
     lightLabel: string
@@ -137,6 +156,7 @@ export default function ThemeToggle({ lightLabel, darkLabel, style }: Props) {
     React.useEffect(() => {
         if (RenderTarget.current() === RenderTarget.canvas) return
         applyStart()
+        setFavicon()
         setDark(currentDark())
         const onTheme = () => setDark(currentDark())
         window.addEventListener("sb-theme", onTheme)
