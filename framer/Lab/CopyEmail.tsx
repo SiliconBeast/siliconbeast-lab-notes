@@ -43,7 +43,7 @@ export default function CopyEmail({ email, style }: Props) {
             <a
                 ref={textRef}
                 href={`mailto:${email}`}
-                style={{ fontFamily: FONT.hand, fontSize: 18, color: C.ink, textDecoration: "underline", textUnderlineOffset: 4, textDecorationThickness: 1 }}
+                style={{ fontFamily: FONT.mono, fontSize: 15, letterSpacing: "0.01em", color: C.ink, textDecoration: "underline", textUnderlineOffset: 4, textDecorationThickness: 1 }}
             >
                 {email}
             </a>
