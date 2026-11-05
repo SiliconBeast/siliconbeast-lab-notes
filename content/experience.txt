@@ -7,26 +7,26 @@ Jan – Aug 2026 | TELUS Communications | Software Engineer Intern | telus
 - Built a Docker ML anomaly pipeline projected to cut support tickets by 47% and save [[$250K/yr]] in truck rolls.
 - Caught schema regressions before staging with [[6,500+ property-based API tests]].
 
-May – Aug 2025 | Faculty of Engineering, University of Alberta | Program Instructor & TA | uaeng
+May – Aug 2025 | Faculty of Engineering, University of Alberta | Program Instructor & TA | ualberta
 - Co-managed 8 projects across 3 products, [[beating targets by 25%]].
 - Built a GCP-hosted Discord verification bot in Python that cut onboarding for 450+ members from [[4 hours a week to 30 seconds]].
 
 Oct 2024 – Jan 2025 | University of Alberta | Undergraduate Research Assistant | ualberta
 - Designed a fuzzy neural network in Python, TensorFlow and scikit-learn, [[improving accuracy by 20%]], and presented it as a research poster.
 
-Jun – Aug 2024 | Mentorness Technologies (remote) | Data Analyst | mentorness
+Jun – Aug 2024 | Mentorness Technologies (remote) | Data Analyst
 - Built Power BI dashboards and pulled business insights from raw data with SQL and Excel.
 
 ## Clubs & leadership
-Mar 2026 – now | UAlberta EcoCar Club, University of Alberta | Electrical & software team member | ecocar
+Mar 2026 – now | UAlberta EcoCar Club, University of Alberta | Electrical & software team member
 - RF: redesigned and hand-soldered the car's [[RF telemetry PCB]] in KiCad, validated while driving.
 - Software: STM32 firmware in C that streams speed, battery voltage and GPS to the pit live, plus [[bug fixes to the team's LoRa (RFM95) radio driver]].
 
-Apr 2026 – now | Student Engagement Leadership Program, Faculty of Engineering, University of Alberta | Engineering Leader | selp
+Apr 2026 – now | Student Engagement Leadership Program, Faculty of Engineering, University of Alberta | Engineering Leader | ualberta
 - Work alongside faculty, staff and fellow students on initiatives that support [[student wellness and the transition to university life]].
 - Share my own experience with current and incoming engineering students, as a volunteer alongside classes and TA work.
 
-May 2025 – May 2026 | UAlberta Computer Engineering Club | VP External | compe
+May 2025 – May 2026 | UAlberta Computer Engineering Club | VP External
 - Built industry and university partnerships for events reaching [[2,300+ students]], and ran workshops.
 
 Jul 2024 – Apr 2025 | Engineering Students' Society, University of Alberta | Entrepreneurship & Innovation Coordinator | ess

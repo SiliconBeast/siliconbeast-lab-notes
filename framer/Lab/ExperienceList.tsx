@@ -1,14 +1,13 @@
 import * as React from "react"
 import { addPropertyControls, ControlType } from "framer"
 import { C, FONT } from "./ink.tsx"
-import Mark, { MARK_NAMES } from "./Mark.tsx"
 
 // The experience section as a scannable list: grouped roles, short bullets, and highlighter
 // marks on the numbers a recruiter looks for. The marks sweep in when the list scrolls into view.
 // Data: blocks separated by a blank line.
 //   ## Group name                      → starts a group
-//   Dates | Organisation | Title | tag → first line of a role (tag: a Mark name such as telus,
-//                                        ualberta, uaeng, ecocar, compe, ess, selp, mentorness; or plan)
+//   Dates | Organisation | Title | tag → first line of a role (tag: a key from Logos, or plan)
+// Logos: one per line, "key | image URL | alt text". A role whose tag matches shows that logo.
 //   - a bullet, with [[highlighted]] words
 //   -> /#contact | link text           → a link under the role
 
@@ -18,7 +17,7 @@ const CSS = `
 .xl-list { list-style: none; margin: 0; padding: 0; }
 .xl-item { display: grid; grid-template-columns: 170px 1fr; column-gap: 24px; padding: 16px 0; border-bottom: 1px dashed ${C.printLine}; }
 .xl-when { font: 500 11.5px/1.5 ${FONT.mono}; letter-spacing: .06em; text-transform: uppercase; color: ${C.pencil}; padding-top: 5px; }
-.xl-mark { width: 104px; margin-top: 8px; }
+.xl-mark { display: block; max-width: 104px; max-height: 34px; width: auto; height: auto; margin-top: 10px; object-fit: contain; object-position: left center; }
 .xl-title { margin: 0; font-family: ${FONT.hand}; font-size: 21px; line-height: 1.3; color: ${C.ink}; }
 .xl-org { display: block; font-family: ${FONT.hand}; font-size: 15.5px; line-height: 1.4; color: ${C.pencil}; }
 .xl-body { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 5px; font-family: ${FONT.hand}; font-size: 16px; line-height: 1.55; color: ${C.inkk}; }
@@ -36,7 +35,7 @@ const CSS = `
 @container (max-width: 560px) {
   .xl-item { grid-template-columns: 1fr; row-gap: 2px; padding: 14px 0; }
   .xl-when { padding-top: 0; }
-  .xl-mark { width: 88px; margin: 4px 0 2px; }
+  .xl-mark { max-width: 88px; max-height: 28px; margin: 6px 0 4px; }
   .xl-title { font-size: 19px; }
 }
 @media (prefers-reduced-motion: reduce) { .xl-hl { transition: none; background-size: 100% 100%; } }
@@ -81,6 +80,7 @@ function ink(text: string) {
 
 interface Props {
     data: string
+    logos: string
     style?: React.CSSProperties
 }
 
@@ -88,8 +88,13 @@ interface Props {
  * @framerSupportedLayoutWidth fixed
  * @framerSupportedLayoutHeight auto
  */
-export default function ExperienceList({ data, style }: Props) {
+export default function ExperienceList({ data, logos, style }: Props) {
     const groups = parse(data)
+    const logoMap: Record<string, { src: string; alt: string }> = {}
+    for (const l of (logos || "").split("\n")) {
+        const [key = "", src = "", alt = ""] = l.split("|").map((s) => s.trim())
+        if (key && src) logoMap[key.toLowerCase()] = { src, alt }
+    }
     const ref = React.useRef<HTMLDivElement>(null)
     const [seen, setSeen] = React.useState(false)
     React.useEffect(() => {
@@ -119,10 +124,8 @@ export default function ExperienceList({ data, style }: Props) {
                             <li key={ri} className={`xl-item${r.tag === "plan" ? " xl-plan" : ""}`}>
                                 <div>
                                     <div className="xl-when">{r.when}</div>
-                                    {r.tag && r.tag !== "plan" && MARK_NAMES().includes(r.tag) && (
-                                        <div className="xl-mark">
-                                            <Mark mark={r.tag} />
-                                        </div>
+                                    {logoMap[r.tag] && (
+                                        <img className="xl-mark" src={logoMap[r.tag].src} alt={logoMap[r.tag].alt || `${r.org} logo`} loading="lazy" />
                                     )}
                                 </div>
                                 <div>
@@ -151,6 +154,13 @@ export default function ExperienceList({ data, style }: Props) {
 }
 
 addPropertyControls(ExperienceList, {
+    logos: {
+        type: ControlType.String,
+        title: "Logos",
+        displayTextArea: true,
+        defaultValue: "",
+        description: "key | image URL | alt text, one per line. Use the key as a role's tag.",
+    },
     data: {
         type: ControlType.String,
         title: "Roles",
