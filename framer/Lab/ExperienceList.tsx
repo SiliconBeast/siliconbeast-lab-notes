@@ -1,13 +1,14 @@
 import * as React from "react"
 import { addPropertyControls, ControlType } from "framer"
 import { C, FONT } from "./ink.tsx"
-import Mark from "./Mark.tsx"
+import Mark, { MARK_NAMES } from "./Mark.tsx"
 
 // The experience section as a scannable list: grouped roles, short bullets, and highlighter
 // marks on the numbers a recruiter looks for. The marks sweep in when the list scrolls into view.
 // Data: blocks separated by a blank line.
 //   ## Group name                      → starts a group
-//   Dates | Organisation | Title | tag → first line of a role (tag: telus, plan)
+//   Dates | Organisation | Title | tag → first line of a role (tag: a Mark name such as telus,
+//                                        ualberta, uaeng, ecocar, compe, ess, selp, mentorness; or plan)
 //   - a bullet, with [[highlighted]] words
 //   -> /#contact | link text           → a link under the role
 
@@ -17,7 +18,7 @@ const CSS = `
 .xl-list { list-style: none; margin: 0; padding: 0; }
 .xl-item { display: grid; grid-template-columns: 170px 1fr; column-gap: 24px; padding: 16px 0; border-bottom: 1px dashed ${C.printLine}; }
 .xl-when { font: 500 11.5px/1.5 ${FONT.mono}; letter-spacing: .06em; text-transform: uppercase; color: ${C.pencil}; padding-top: 5px; }
-.xl-mark { width: 74px; margin-top: 8px; }
+.xl-mark { width: 104px; margin-top: 8px; }
 .xl-title { margin: 0; font-family: ${FONT.hand}; font-size: 21px; line-height: 1.3; color: ${C.ink}; }
 .xl-org { display: block; font-family: ${FONT.hand}; font-size: 15.5px; line-height: 1.4; color: ${C.pencil}; }
 .xl-body { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 5px; font-family: ${FONT.hand}; font-size: 16px; line-height: 1.55; color: ${C.inkk}; }
@@ -35,7 +36,7 @@ const CSS = `
 @container (max-width: 560px) {
   .xl-item { grid-template-columns: 1fr; row-gap: 2px; padding: 14px 0; }
   .xl-when { padding-top: 0; }
-  .xl-mark { width: 62px; margin: 4px 0 2px; }
+  .xl-mark { width: 88px; margin: 4px 0 2px; }
   .xl-title { font-size: 19px; }
 }
 @media (prefers-reduced-motion: reduce) { .xl-hl { transition: none; background-size: 100% 100%; } }
@@ -118,9 +119,9 @@ export default function ExperienceList({ data, style }: Props) {
                             <li key={ri} className={`xl-item${r.tag === "plan" ? " xl-plan" : ""}`}>
                                 <div>
                                     <div className="xl-when">{r.when}</div>
-                                    {r.tag === "telus" && (
+                                    {r.tag && r.tag !== "plan" && MARK_NAMES().includes(r.tag) && (
                                         <div className="xl-mark">
-                                            <Mark mark="telus" />
+                                            <Mark mark={r.tag} />
                                         </div>
                                     )}
                                 </div>
