@@ -64,7 +64,7 @@ export function PencilSvg({ name, uid, size }: { name: string; uid: string; size
                 </defs>
                 <rect x="2.5" y="5.5" width="19" height="13" rx="1.2" fill={`url(#${pid})`} />
                 <rect x="2.5" y="5.5" width="19" height="13" rx="1.2" fill={col} opacity={0.22} />
-                <text x="12" y="13.9" textAnchor="middle" fontFamily='"JetBrains Mono", ui-monospace, monospace' fontWeight={700} fontSize={fs} style={{ fill: C.inkk }}>
+                <text x="12" y="13.9" textAnchor="middle" fontFamily='"B612 Mono", ui-monospace, monospace' fontWeight={700} fontSize={fs} style={{ fill: C.inkk }}>
                     {text}
                 </text>
             </g>

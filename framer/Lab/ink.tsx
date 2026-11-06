@@ -41,7 +41,7 @@ export const C = {
 export const FONT = {
     hand: '"Architects Daughter", "Architects Daughter Placeholder", "Comic Sans MS", cursive',
     scrawl: '"Caveat", "Caveat Placeholder", cursive',
-    mono: '"JetBrains Mono", "JetBrains Mono Placeholder", ui-monospace, monospace',
+    mono: '"B612 Mono", "B612 Mono Placeholder", ui-monospace, monospace',
     serif: '"Instrument Serif", "Instrument Serif Placeholder", Georgia, serif',
 }
 
