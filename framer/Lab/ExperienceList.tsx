@@ -7,7 +7,8 @@ import { C, FONT, DARK } from "./ink.tsx"
 // Data: blocks separated by a blank line.
 //   ## Group name                      → starts a group
 //   Dates | Organisation | Title | tag → first line of a role (tag: a key from Logos, or plan)
-// Logos: one per line, "key | image URL | alt text". A role whose tag matches shows that logo.
+// Logos: one per line, "key | image URL | alt text | height". A role whose tag matches shows that
+// logo; height (px, optional) lets a wide, small-lettered logo draw larger.
 //   - a bullet, with [[highlighted]] words
 //   -> /#contact | link text           → a link under the role
 
@@ -91,10 +92,10 @@ interface Props {
  */
 export default function ExperienceList({ data, logos, style }: Props) {
     const groups = parse(data)
-    const logoMap: Record<string, { src: string; alt: string }> = {}
+    const logoMap: Record<string, { src: string; alt: string; h: number }> = {}
     for (const l of (logos || "").split("\n")) {
-        const [key = "", src = "", alt = ""] = l.split("|").map((s) => s.trim())
-        if (key && src) logoMap[key.toLowerCase()] = { src, alt }
+        const [key = "", src = "", alt = "", h = ""] = l.split("|").map((s) => s.trim())
+        if (key && src) logoMap[key.toLowerCase()] = { src, alt, h: parseFloat(h) || 0 }
     }
     const ref = React.useRef<HTMLDivElement>(null)
     const [seen, setSeen] = React.useState(false)
@@ -126,7 +127,13 @@ export default function ExperienceList({ data, logos, style }: Props) {
                                 <div>
                                     <div className="xl-when">{r.when}</div>
                                     {logoMap[r.tag] && (
-                                        <img className="xl-mark" src={logoMap[r.tag].src} alt={logoMap[r.tag].alt || `${r.org} logo`} loading="lazy" />
+                                        <img
+                                            className="xl-mark"
+                                            src={logoMap[r.tag].src}
+                                            alt={logoMap[r.tag].alt || `${r.org} logo`}
+                                            loading="lazy"
+                                            style={logoMap[r.tag].h ? { maxHeight: logoMap[r.tag].h, maxWidth: 160 } : undefined}
+                                        />
                                     )}
                                 </div>
                                 <div>
@@ -160,7 +167,7 @@ addPropertyControls(ExperienceList, {
         title: "Logos",
         displayTextArea: true,
         defaultValue: "",
-        description: "key | image URL | alt text, one per line. Use the key as a role's tag.",
+        description: "key | image URL | alt text | height px (optional), one per line. Use the key as a role's tag.",
     },
     data: {
         type: ControlType.String,
