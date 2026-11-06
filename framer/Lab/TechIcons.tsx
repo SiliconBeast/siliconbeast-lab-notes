@@ -4,7 +4,7 @@ import { C, FONT } from "./ink.tsx"
 import { PencilSvg, PENCIL_CSS, label, useUid } from "./pencil.tsx"
 
 // A row of coloured-pencil tech logos with labels, from a comma-separated list of keys.
-// Keys: c, cplusplus, python, go, openjdk, javascript, sql, verilog, vhdl, cuda, matlab,
+// Keys: c, cplusplus, python, go, openjdk, javascript, sql, verilog, vhdl, cuda, rocm, matlab,
 // stmicroelectronics, jetson, nxp, raspberrypi, arduino, riscv, fpga, kicad, vivado, cadence, ltspice,
 // docker, grpc, gnmi, redis, influxdb, grafana, aws, googlecloud, linux, openwrt, rest,
 // git, github, jira, claude, tensorflow, cicd, agile, devpost

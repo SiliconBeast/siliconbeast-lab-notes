@@ -182,8 +182,8 @@ const md = (s: string) => {
     return (m || 0) * 100 + (d || 0)
 }
 
-function inSeason(start: string, end: string) {
-    if (/[?&#]halloween\b/.test(location.search + location.hash)) return true
+function inSeason(start: string, end: string, flag = "halloween") {
+    if (new RegExp(`[?&#]${flag}\\b`).test(location.search + location.hash)) return true
     const now = new Date()
     const t = (now.getMonth() + 1) * 100 + now.getDate()
     const a = md(start)
@@ -278,12 +278,142 @@ function startHalloween() {
     window.addEventListener("resize", run)
 }
 
+// ---- Christmas ----
+// Fairy lights strung under the ruler nav, a light pencil snowfall, snow on the top edge of the
+// notebook sheets, a Santa hat on the TL;DR note, holly on its pin and a wrapped gift by the name.
+// On from Nov 6 to Jan 6, or with ?xmas in the URL.
+const XM_START = "11-06"
+const XM_END = "01-06"
+const XM_BULBS = ["#E5483B", "#F2C230", "#3E9E5A", "#3D7DD8", "#E86FB0"]
+
+const XM_CSS = `
+.xm-lights { position: fixed; left: 0; right: 0; height: 26px; display: flex; justify-content: center; pointer-events: none; z-index: 49; overflow: hidden; }
+.xm-seg { position: relative; flex: 0 0 64px; height: 14px; border-bottom: 1.3px solid ${HW_PENCIL}; border-radius: 0 0 50% 50%; opacity: .9; }
+.xm-bulb { position: absolute; left: 50%; bottom: -10px; width: 7px; height: 11px; margin-left: -3.5px; border-radius: 50% 50% 46% 46%; background: var(--c); box-shadow: 0 0 6px 1px var(--c); animation: xm-twinkle 2.4s ease-in-out infinite; animation-delay: var(--d); }
+.xm-bulb::before { content: ""; position: absolute; left: 1.5px; top: -3px; width: 4px; height: 3px; border-radius: 1px; background: ${HW_PENCIL}; }
+@keyframes xm-twinkle { 0%, 100% { opacity: 1; } 50% { opacity: .35; box-shadow: none; } }
+.xm-snow { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 48; }
+.xm-flake { position: absolute; top: -20px; color: #9DB4CC; font-size: var(--s); line-height: 1; opacity: .75; animation: xm-fall var(--t) linear infinite, xm-sway calc(var(--t) / 4) ease-in-out infinite alternate; animation-delay: var(--d); }
+body[data-sb-theme="dark"] .xm-flake { color: #EAF2FC; opacity: .6; }
+@keyframes xm-fall { to { transform: translateY(110vh); } }
+@keyframes xm-sway { from { margin-left: -14px; } to { margin-left: 14px; } }
+.xm-cap { position: absolute; left: 6px; right: 6px; top: -9px; height: 16px; pointer-events: none; z-index: 3; }
+.xm-cap svg { display: block; width: 100%; height: 100%; }
+.xm-hat { position: absolute; width: 54px; height: 44px; pointer-events: none; z-index: 2; transform: rotate(14deg); }
+.xm-gift { position: absolute; right: 0; bottom: 6px; width: 34px; height: 36px; pointer-events: none; }
+.xm-holly { position: absolute; left: 50%; top: 50%; width: 26px; height: 20px; margin: -12px 0 0 -13px; filter: drop-shadow(0 2px 1px rgba(0,0,0,.25)); }
+[data-xm-pin] { background: transparent !important; box-shadow: none !important; }
+@media (prefers-reduced-motion: reduce) { .xm-snow { display: none; } .xm-bulb { animation: none; } }
+@media print { .xm-lights, .xm-snow, .xm-cap, .xm-hat, .xm-gift, .xm-holly { display: none; } }
+`
+
+const XM_SVG = {
+    cap: `<div class="xm-cap" aria-hidden="true"><svg viewBox="0 0 400 16" preserveAspectRatio="none"><path d="M0 12 C8 2 22 3 30 9 C38 1 56 2 64 10 C74 3 90 4 98 11 C108 2 126 3 134 9 C144 1 160 3 168 10 C178 2 194 4 202 11 C212 3 228 2 236 9 C246 1 262 3 270 10 C280 2 296 4 304 11 C314 3 330 2 338 9 C348 1 364 3 372 10 C382 3 394 4 400 9 V16 H0 Z" fill="#FFFFFF" stroke="#9DB4CC" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></div>`,
+    hat: `<svg class="xm-hat" viewBox="0 0 54 44" aria-hidden="true"><path d="M8 34 C10 20 18 8 32 6 C42 5 48 12 46 22 C44 18 40 16 37 18 C40 24 41 30 40 34 Z" fill="#D8382E" stroke="#7A1E18" stroke-width="1.2" stroke-linejoin="round"/><circle cx="45" cy="24" r="5" fill="#FFFFFF" stroke="#9DB4CC" stroke-width="1.1"/><path d="M4 33 C16 30 32 30 44 33 C45 36 45 39 44 41 C32 38 16 38 4 41 C3 38 3 36 4 33 Z" fill="#FFFFFF" stroke="#9DB4CC" stroke-width="1.1"/></svg>`,
+    gift: `<svg class="xm-gift" viewBox="0 0 34 36" aria-hidden="true"><rect x="3" y="14" width="28" height="20" rx="1.5" fill="#3E9E5A" stroke="${HW_INK}" stroke-width="1.2"/><rect x="1" y="9" width="32" height="7" rx="1.5" fill="#4FB06B" stroke="${HW_INK}" stroke-width="1.2"/><path d="M15 9 V34 M19 9 V34" stroke="#D8382E" stroke-width="2.4"/><path d="M17 9 C11 2 5 4 8 8 C10 10 14 9 17 9 C20 9 24 10 26 8 C29 4 23 2 17 9 Z" fill="#E5483B" stroke="#7A1E18" stroke-width="1"/></svg>`,
+    holly: `<svg class="xm-holly" viewBox="0 0 26 20" aria-hidden="true"><path d="M13 11 C9 6 4 7 1 4 C3 8 1 10 3 12 C6 11 9 13 13 11 Z" fill="#2E7D47" stroke="#1B4F2C" stroke-width=".8"/><path d="M13 11 C17 6 22 7 25 4 C23 8 25 10 23 12 C20 11 17 13 13 11 Z" fill="#2E7D47" stroke="#1B4F2C" stroke-width=".8"/><circle cx="11" cy="13" r="2.6" fill="#D8382E"/><circle cx="15.2" cy="13.4" r="2.6" fill="#E5483B"/><circle cx="13" cy="9.8" r="2.4" fill="#C62F26"/></svg>`,
+}
+
+function xmAdd(parent: HTMLElement, html: string, key: string) {
+    if (parent.querySelector(`:scope > [data-xm="${key}"]`)) return
+    const wrap = document.createElement("div")
+    wrap.innerHTML = html
+    const el = wrap.firstElementChild as HTMLElement
+    el.setAttribute("data-xm", key)
+    parent.appendChild(el)
+}
+
+function decorateXmas() {
+    const ruler = named("Ruler nav").find(visible)
+    const top = ruler ? Math.round(ruler.getBoundingClientRect().height) - 6 : 46
+    let lights = document.querySelector('body > [data-xm="lights"]') as HTMLElement | null
+    const count = Math.ceil(window.innerWidth / 64) + 1
+    if (!lights || lights.childElementCount !== count) {
+        lights?.remove()
+        lights = document.createElement("div")
+        lights.className = "xm-lights"
+        lights.setAttribute("data-xm", "lights")
+        lights.setAttribute("aria-hidden", "true")
+        let html = ""
+        for (let i = 0; i < count; i++)
+            html += `<div class="xm-seg"><span class="xm-bulb" style="--c:${XM_BULBS[i % XM_BULBS.length]};--d:${((i * 0.37) % 2.4).toFixed(2)}s"></span></div>`
+        lights.innerHTML = html
+        document.body.appendChild(lights)
+    }
+    lights.style.top = `${top}px`
+    if (!document.querySelector('body > [data-xm="snow"]')) {
+        const snow = document.createElement("div")
+        snow.className = "xm-snow"
+        snow.setAttribute("data-xm", "snow")
+        snow.setAttribute("aria-hidden", "true")
+        let html = ""
+        for (let i = 0; i < 22; i++) {
+            const left = (i * 47.3) % 100
+            const size = 9 + ((i * 7) % 9)
+            const t = 11 + ((i * 5) % 9)
+            const d = -((i * 3.1) % t)
+            html += `<span class="xm-flake" style="left:${left.toFixed(1)}%;--s:${size}px;--t:${t}s;--d:${d.toFixed(1)}s">${i % 3 ? "✻" : "❄"}</span>`
+        }
+        snow.innerHTML = html
+        document.body.appendChild(snow)
+    }
+    for (const sheet of named("Index sheet").concat(named("Project sheet")).filter(visible)) {
+        relative(sheet)
+        sheet.style.overflow = "visible"
+        xmAdd(sheet, XM_SVG.cap, "cap")
+    }
+    for (const field of named("Field Name").filter(visible)) {
+        relative(field)
+        xmAdd(field, XM_SVG.gift, "gift")
+    }
+    for (const note of named("TL;DR sticky").filter(visible)) {
+        const parent = note.parentElement
+        if (!parent) continue
+        relative(parent)
+        xmAdd(parent, XM_SVG.hat, "hat")
+        const hat = parent.querySelector(':scope > [data-xm="hat"]') as HTMLElement | null
+        if (hat) {
+            hat.style.left = `${note.offsetLeft + note.offsetWidth - 40}px`
+            hat.style.top = `${note.offsetTop - 30}px`
+        }
+        const pin = note.querySelector('[data-framer-name="Pin"]') as HTMLElement | null
+        if (pin) {
+            pin.setAttribute("data-xm-pin", "")
+            relative(pin)
+            xmAdd(pin, XM_SVG.holly, "holly")
+        }
+    }
+}
+
+function startXmas() {
+    const w = window as any
+    if (w.__xmStarted || !inSeason(XM_START, XM_END, "xmas")) return
+    w.__xmStarted = true
+    const css = document.createElement("style")
+    css.id = "xm-css"
+    css.textContent = XM_CSS
+    document.head.appendChild(css)
+    let raf = 0
+    const run = () => {
+        cancelAnimationFrame(raf)
+        raf = requestAnimationFrame(decorateXmas)
+    }
+    run()
+    new MutationObserver((records) => {
+        // ignore our own additions so the observer doesn't loop
+        if (records.every((r) => Array.from(r.addedNodes).every((n) => n instanceof HTMLElement && (n.hasAttribute("data-xm") || n.closest("[data-xm]"))))) return
+        run()
+    }).observe(document.body, { childList: true, subtree: true })
+    window.addEventListener("resize", run)
+}
+
 // Run as soon as this module loads, before React hydrates, so a dark-mode system doesn't flash
 // the blueprint palette first.
 if (typeof document !== "undefined" && document.body && RenderTarget.current() !== RenderTarget.canvas) {
     applyStart()
     setFavicon()
     startHalloween()
+    startXmas()
 }
 
 interface Props {
@@ -304,6 +434,7 @@ export default function ThemeToggle({ lightLabel, darkLabel, style }: Props) {
         applyStart()
         setFavicon()
         startHalloween()
+        startXmas()
         setDark(currentDark())
         const onTheme = () => setDark(currentDark())
         window.addEventListener("sb-theme", onTheme)

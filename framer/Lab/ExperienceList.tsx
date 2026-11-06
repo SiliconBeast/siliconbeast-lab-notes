@@ -1,6 +1,6 @@
 import * as React from "react"
 import { addPropertyControls, ControlType } from "framer"
-import { C, FONT } from "./ink.tsx"
+import { C, FONT, DARK } from "./ink.tsx"
 
 // The experience section as a scannable list: grouped roles, short bullets, and highlighter
 // marks on the numbers a recruiter looks for. The marks sweep in when the list scrolls into view.
@@ -32,6 +32,7 @@ const CSS = `
 .xl-plan { border-bottom: 0; }
 .xl-link { display: inline-block; margin-top: 6px; font-family: ${FONT.scrawl}; font-size: 19px; color: ${C.ink}; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 .xl-link:hover { text-decoration-style: wavy; }
+${DARK.attr}.xl-mark { background: #FBFAF4; padding: 4px 7px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.35); }
 @container (max-width: 560px) {
   .xl-item { grid-template-columns: 1fr; row-gap: 2px; padding: 14px 0; }
   .xl-when { padding-top: 0; }
