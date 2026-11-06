@@ -4,7 +4,7 @@ import { C, FONT } from "./ink.tsx"
 
 // Light paper / blueprint switch. Framer only switches colour styles with the OS setting,
 // so this writes both palettes as rules keyed on data-sb-theme (on <html> and <body>) and
-// reveals the new theme with an ink-spread circle from the button.
+// shades the new theme in with a diagonal band of pencil hatching.
 // Keep TOKENS in sync with the Lab/* colour styles: [token id, light, dark].
 
 const TOKENS: [string, string, string][] = [
@@ -42,6 +42,12 @@ const TOKENS: [string, string, string][] = [
 
 const KEY = "sb-theme"
 
+// solid fill up to --sb-hp, then a 22%-wide band of diagonal pencil strokes ahead of it
+const HATCH_MASK =
+    "linear-gradient(115deg, #000 var(--sb-hp), transparent var(--sb-hp)), " +
+    "linear-gradient(115deg, transparent var(--sb-hp), #000 var(--sb-hp), #000 calc(var(--sb-hp) + 22%), transparent calc(var(--sb-hp) + 22%)), " +
+    "repeating-linear-gradient(35deg, #000 0 2.5px, transparent 2.5px 7px)"
+
 function css() {
     const vars = (i: 1 | 2) => TOKENS.map((t) => `--token-${t[0]}: ${t[i]} !important;`).join(" ")
     // The universal selector beats any element that re-declares the tokens further down the tree.
@@ -52,6 +58,12 @@ function css() {
         `html[data-sb-theme="dark"] { color-scheme: dark; } html[data-sb-theme="light"] { color-scheme: light; }\n` +
         `::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }\n` +
         `::view-transition-new(root) { z-index: 2147483646; }\n` +
+        // pencil shading: a hatched band sweeps diagonally across, solid new theme behind it
+        `@property --sb-hp { syntax: "<percentage>"; inherits: false; initial-value: -30%; }\n` +
+        `html.sb-hatching::view-transition-new(root) { animation: sb-hatch 1.1s cubic-bezier(.45,.05,.55,.95) forwards; ` +
+        `-webkit-mask-image: ${HATCH_MASK}; mask-image: ${HATCH_MASK}; ` +
+        `-webkit-mask-composite: source-over, source-in; mask-composite: add, intersect; }\n` +
+        `@keyframes sb-hatch { from { --sb-hp: -30%; } to { --sb-hp: 130%; } }\n` +
         // blueprint scan line sweeping down after switching to dark
         `.sb-scan { position: fixed; left: 0; right: 0; top: -30vh; height: 30vh; z-index: 2147483647; pointer-events: none; background: linear-gradient(transparent, rgba(120,190,255,.10) 70%, rgba(170,215,255,.55) 98%, transparent); animation: sb-scan .9s cubic-bezier(.5,0,.3,1) forwards; }\n` +
         `.sb-scan::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(217,230,247,.25) 1px, transparent 1px), linear-gradient(90deg, rgba(217,230,247,.25) 1px, transparent 1px); background-size: 24px 24px; mask-image: linear-gradient(transparent, #000); -webkit-mask-image: linear-gradient(transparent, #000); }\n` +
@@ -452,22 +464,11 @@ export default function ThemeToggle({ lightLabel, darkLabel, style }: Props) {
             flourish(next)
             return
         }
-        const rect = e.currentTarget.getBoundingClientRect()
-        const x = rect.left + rect.width / 2
-        const y = rect.top + rect.height / 2
-        const r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+        const root = document.documentElement
+        root.classList.add("sb-hatching")
         const vt = doc.startViewTransition(() => apply(next))
-        vt.ready
-            .then(() => {
-                document.documentElement.animate(
-                    { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
-                    { duration: 750, easing: "cubic-bezier(.6, 0, .3, 1)", pseudoElement: "::view-transition-new(root)" }
-                )
-            })
-            .catch(() => {})
-        vt.finished
-            .then(() => flourish(next))
-            .catch(() => {})
+        const done = () => root.classList.remove("sb-hatching")
+        vt.finished.then(done, done)
     }
 
     // The sun or moon at the end of the label swings like a pull-cord lamp when clicked.
